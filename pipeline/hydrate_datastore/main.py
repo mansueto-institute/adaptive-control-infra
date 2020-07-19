@@ -1,16 +1,19 @@
 from pathlib import Path
-from warnings import simplefilter
 
 import pandas as pd
 
-from adaptive.etl.covid19india import (data_path, download_data,
-                                       get_time_series, load_all_data,
-                                       load_statewise_data)
-from adaptive.utils import cwd
+import adaptive
 
-simplefilter("ignore")
+#from adaptive.etl.covid19india import (data_path, download_data,
+#                                       get_time_series, load_all_data,
+#                                       load_statewise_data)
+#from adaptive.utils import cwd
 
 def hydrate_datastore(_):
+    print(dir(adaptive))
+    from adaptive.etl.covid19india import data_path
+
+def x(_):
     root = Path("/tmp")
     data = root/"data"
     figs = root/"figs"
