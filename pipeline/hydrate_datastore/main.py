@@ -10,7 +10,7 @@ import adaptive
 #from adaptive.utils import cwd
 
 def hydrate_datastore(_):
-    return tuple(dir(adaptive))
+    return str(dir(adaptive))
     
 
 def x(_):
