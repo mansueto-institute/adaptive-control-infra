@@ -11,7 +11,8 @@ import adaptive
 
 def hydrate_datastore(_):
     print(dir(adaptive))
-    from adaptive.etl.covid19india import data_path
+    import adaptive as dpt
+    import adaptive.etl as etl 
 
 def x(_):
     root = Path("/tmp")
