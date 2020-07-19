@@ -10,9 +10,8 @@ import adaptive
 #from adaptive.utils import cwd
 
 def hydrate_datastore(_):
-    print(dir(adaptive))
-    import adaptive as dpt
-    import adaptive.etl as etl 
+    return dir(adaptive)
+    
 
 def x(_):
     root = Path("/tmp")
