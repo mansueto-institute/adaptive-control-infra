@@ -6,7 +6,7 @@ import adaptive
 
 
 def hydrate_datastore(_):
-    from adaptive.etl.covid19india import data_path, download_data, get_time_series, load_all_data, load_statewise_data
+    #from adaptive.etl.covid19india import data_path, download_data, get_time_series, load_all_data, load_statewise_data
     from adaptive.utils import cwd
     return f"x y z" 
     
