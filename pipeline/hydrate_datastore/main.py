@@ -3,6 +3,8 @@ from pathlib import Path
 import pandas as pd
 
 import adaptive
+import adaptive.utils
+import adaptive.etl 
 
 
 def hydrate_datastore(_):
