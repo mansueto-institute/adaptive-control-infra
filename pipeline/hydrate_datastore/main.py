@@ -4,10 +4,10 @@ from pathlib import Path
 import pandas as pd
 
 import adaptive
+from adaptive.etl.covid19india import * 
 
 def hydrate_datastore(_):
-    retval = str(Path(adaptive.__file__).resolve().parent)
-    return f"{retval}" 
+    return "yyx" 
     
 
 def x(_):
@@ -43,3 +43,6 @@ def x(_):
 
     df.to_csv(data/f"hashed_records_{run_date}.csv")
     print(df.tail())
+
+if __name__ == "__main__":
+    hydrate_datastore(None)
