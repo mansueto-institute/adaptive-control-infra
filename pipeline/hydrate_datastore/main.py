@@ -4,15 +4,13 @@ from pathlib import Path
 import pandas as pd
 
 import adaptive
-from adaptive.etl.covid19india import download_data, get_time_series, load_statewise_data, state_name_lookup
+from adaptive.etl.covid19india import download_data, get_time_series, load_all_data, data_path
 
 def hydrate_datastore(_):
     root = Path("/tmp")
     data = root/"data"
-    figs = root/"figs"
 
     data.mkdir(exist_ok=True)
-    figs.mkdir(exist_ok=True)
 
     # define data versions for api files
     paths = {
@@ -39,6 +37,8 @@ def hydrate_datastore(_):
 
     df.to_csv(data/f"hashed_records_{run_date}.csv")
     print(df.tail())
+    
+    return f"done with analysis for data up to {data_recency} on date: {run_date}"
 
 if __name__ == "__main__":
     hydrate_datastore(None)
