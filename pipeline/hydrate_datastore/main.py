@@ -1,12 +1,13 @@
+import os 
 from pathlib import Path
 
 import pandas as pd
 
 import adaptive
-from adaptive import etl 
 
 def hydrate_datastore(_):
-    return f"x y z" 
+    retval = os.environ.get("PYTHONPATH", "PYTHONPATH not set")
+    return f"{retval}" 
     
 
 def x(_):
