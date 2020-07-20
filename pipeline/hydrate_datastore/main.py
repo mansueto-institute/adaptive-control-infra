@@ -6,7 +6,7 @@ import pandas as pd
 import adaptive
 
 def hydrate_datastore(_):
-    retval = os.environ.get("PYTHONPATH", "PYTHONPATH not set")
+    retval = str(Path(adaptive.__file__).resolve().parent)
     return f"{retval}" 
     
 
