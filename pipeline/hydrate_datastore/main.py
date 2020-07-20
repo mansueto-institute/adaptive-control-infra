@@ -4,13 +4,9 @@ from pathlib import Path
 import pandas as pd
 
 import adaptive
-from adaptive.etl.covid19india import * 
+from adaptive.etl.covid19india import download_data, get_time_series, load_statewise_data, state_name_lookup
 
 def hydrate_datastore(_):
-    return "yyx" 
-    
-
-def x(_):
     root = Path("/tmp")
     data = root/"data"
     figs = root/"figs"
