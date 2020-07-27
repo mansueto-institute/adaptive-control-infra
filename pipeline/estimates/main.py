@@ -40,6 +40,7 @@ def run_estimates(_):
     root = Path("/tmp")
     data = root/"data"
 
+    data.mkdir(exist_ok=True)
     download_data(data, 'state_wise_daily.csv')
 
     state_df = load_statewise_data(data/"state_wise_daily.csv")
