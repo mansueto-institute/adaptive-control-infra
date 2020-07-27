@@ -36,7 +36,7 @@ def project(dates, R_values, smoothing, period = 7*days):
     .fit()\
     .predict([1, julian_dates[-1] + period])[0]
 
-def run_estimates():
+def run_estimates(_):
     root = Path("/tmp")
     data = root/"data"
 
