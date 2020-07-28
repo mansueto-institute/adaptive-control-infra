@@ -38,7 +38,7 @@ def sync_sheet(_):
             spreadsheetId=sheet_id, 
             range=range_, 
             valueInputOption='USER_ENTERED', 
-            insertDataOption='OVERWRITE', 
+            # insertDataOption='OVERWRITE', 
             body={"values":values})\
         .execute()
     print("response from sheets client", response)
