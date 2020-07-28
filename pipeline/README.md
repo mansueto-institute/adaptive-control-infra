@@ -1,5 +1,7 @@
 # setting up pipeline functions 
 
+- enable sheets API
+
 - set up cloud repo to sync
 
 - create a service account
