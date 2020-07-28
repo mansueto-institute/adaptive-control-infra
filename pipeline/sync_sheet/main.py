@@ -29,7 +29,7 @@ def sync_sheet(_):
     # write values to sheet 
     print("writing values to sheet")
     values = [list(a) for a in df[["state", "date", "Rt", "Rt_upper", "Rt_lower"]].values] 
-    range_ = f"Rt_timeseries_india!A2:E"
+    range_ = "Rt_timeseries_india!A2:E"
 
     credentials, _ = google.auth.default(scopes=['https://www.googleapis.com/auth/spreadsheets'])
     service  = build('sheets', 'v4', credentials=credentials)
