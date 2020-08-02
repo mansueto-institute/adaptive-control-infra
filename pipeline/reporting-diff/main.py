@@ -41,13 +41,14 @@ def reporting_diff(_):
     print("calculating diff")
     df_new["rowhash"] = df_new.apply(lambda x: hash(tuple(x)), axis = 1)
     df_new["report_date"] = run_date 
+    diff = df_new[~df_new.rowhash.isin(df_old.rowhash)]
+    num_new_rows = len(diff)
 
-    print("uploading diff")
-    pd.concat([df_old, df_new[~df_new.rowhash.isin(df_old.rowhash)]]).to_csv(filename)
-    response = storage.Client()\
+    print(f"uploading diff ({num_new_rows} new rows written)")
+    pd.concat([df_old, diff]).to_csv(filename)
+    storage.Client()\
         .bucket(bucket_name)\
         .blob(blob_name)\
         .upload_from_filename(filename, content_type = "text/csv")
-    print(response)
 
     print("done")
