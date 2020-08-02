@@ -44,6 +44,7 @@ def reporting_diff(_):
 
     print("uploading diff")
     pd.concat([df_old, df_new[~df_new.rowhash.isin(df_old.rowhash)]]).to_csv(filename)
-    blob.upload_from_filename(filename, content_type = "text/csv")
+    response = blob.upload_from_filename(filename, content_type = "text/csv")
+    print(response)
 
     print("done")
