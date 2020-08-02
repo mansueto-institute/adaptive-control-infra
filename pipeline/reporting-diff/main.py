@@ -15,10 +15,10 @@ def reporting_diff(_):
 
     # download csv from cloud storage
     print("downloading csv")
-    blob = storage.Client()\
+    storage.Client()\
         .bucket(bucket_name)\
-        .blob(blob_name)
-    blob.download_to_filename(filename)
+        .blob(blob_name)\
+        .download_to_filename(filename)
     
     print("loading csv")
     df_old = pd.read_csv(filename)
@@ -44,7 +44,10 @@ def reporting_diff(_):
 
     print("uploading diff")
     pd.concat([df_old, df_new[~df_new.rowhash.isin(df_old.rowhash)]]).to_csv(filename)
-    response = blob.upload_from_filename(filename, content_type = "text/csv")
+    response = storage.Client()\
+        .bucket(bucket_name)\
+        .blob(blob_name)\
+        .upload_from_filename(filename, content_type = "text/csv")
     print(response)
 
     print("done")
