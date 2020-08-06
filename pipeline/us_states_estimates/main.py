@@ -2,13 +2,14 @@ from pathlib import Path
 from typing  import Dict, Optional, Sequence, Tuple, Callable
 from tqdm    import tqdm
 from io      import StringIO
+from google.cloud import storage
 
 from adaptive.utils      import cwd
 from adaptive.estimators import gamma_prior
 from adaptive.smoothing  import notched_smoothing
 
 from etl import import_clean_smooth_cases, get_new_rt_live_estimates
-from rtlive_old_model import run_rtlive_old_model
+# from rtlive_old_model import run_rtlive_old_model
 from luis_model import run_luis_model
 
 import matplotlib.pyplot as plt
@@ -22,6 +23,9 @@ import subprocess
 CI               = 0.95
 smoothing_window = 7
 rexepath         = 'C:\\Program Files\\R\\R-3.6.1\\bin\\'
+
+# CLOUD DETAILS 
+bucket_name = "us-states-rt-estimation"
 
 
 def run_adaptive_model(df:pd.DataFrame, locationvar:str, CI:float, filepath:Path) -> None:
@@ -139,7 +143,7 @@ def make_state_plots(df:pd.DataFrame, plotspath:Path) -> None:
         plt.close()
 
 
-def main():
+def estimate_and_plot():
 
     # Folder structures and file names
     root    = cwd()
@@ -156,25 +160,32 @@ def main():
     # Run models for adaptive and rt.live old version
     run_adaptive_model(df=df, locationvar='state', CI=CI, filepath=data)
     run_luis_model(df=df, locationvar='state', CI=CI, filepath=data)
-    run_rtlive_old_model(df=df, locationvar='state', CI=CI, filepath=data)
+    # run_rtlive_old_model(df=df, locationvar='state', CI=CI, filepath=data)
     # run_cori_model(filepath=root, rexepath=rexepath) # Have to change R file parameters separately
 
     # Pull CSVs of results
     adaptive_df    = pd.read_csv(data/"adaptive_estimates.csv")
-    rt_live_new_df = get_new_rt_live_estimates(data)
-    rt_live_old_df = pd.read_csv(data/"rtlive_old_estimates.csv")
-    cori_df        = pd.read_csv(data/"cori_estimates.csv")
     luis_df        = pd.read_csv(data/"luis_code_estimates.csv")
+    rt_live_new_df = get_new_rt_live_estimates(data)
+    # rt_live_old_df = pd.read_csv(data/"rtlive_old_estimates.csv")
+    # cori_df        = pd.read_csv(data/"cori_estimates.csv")
 
     # Merge all results together
-    merged_df      = adaptive_df.merge(rt_live_new_df, how='outer', on=['state','date'])
-    merged_df      = merged_df.merge(rt_live_old_df, how='outer', on=['state','date'])
-    merged_df      = merged_df.merge(cori_df, how='outer', on=['state','date'])
-    merged_df      = merged_df.merge(luis_df, how='outer', on=['state','date'])
+    merged_df      = adaptive_df.merge(luis_df, how='outer', on=['state','date'])
+    merged_df      = merged_df.merge(rt_live_new_df, how='outer', on=['state','date'])
+    # merged_df      = merged_df.merge(rt_live_old_df, how='outer', on=['state','date'])
+    # merged_df      = merged_df.merge(cori_df, how='outer', on=['state','date'])
 
-    # Fix date formatting   
+    # Fix date formatting and save results
     merged_df.loc[:,'date'] = pd.to_datetime(merged_df['date'], format='%Y-%m-%d')
-
-    # Save CSV and plots
     merged_df.to_csv(data/"+rt_estimates_comparison.csv")
-    make_state_plots(merged_df, plots)
+
+    # Make plots
+    # make_state_plots(merged_df, plots)
+
+    # Upload to Cloud
+    bucket = storage.Client().bucket(bucket_name)
+    all_blob        = bucket.blob("data/+rt_estimates_comparison.csv").upload_from_filename(str(data/"+rt_estimates_comparison.csv"), content_type="text/csv")
+    adaptive_blob   = bucket.blob("data/adaptive_estimates.csv").upload_from_filename(str(data/"adaptive_estimates.csv"), content_type="text/csv")
+    luis_blob       = bucket.blob("data/luis_estimates.csv").upload_from_filename(str(data/"luis_estimates.csv"), content_type="text/csv")
+    rtlive_new_blob = bucket.blob("data/rtlive_new_estimates.csv").upload_from_filename(str(data/"rtlive_new_estimates.csv"), content_type="text/csv")

@@ -99,7 +99,6 @@ def get_new_rt_live_estimates(path: Path) -> pd.DataFrame:
     # Import and save as csv
     res = requests.get("https://d14wlfuexuxgcm.cloudfront.net/covid/rt.csv")
     df = pd.read_csv(StringIO(res.text))
-    df.to_csv(path/"rtlive_new_estimates.csv", index=False)
     
     # Filter to just necessary features
     df = df[kept_columns]
@@ -109,4 +108,6 @@ def get_new_rt_live_estimates(path: Path) -> pd.DataFrame:
                         'lower_80':'RR_lower_rtlivenew', 'upper_80':'RR_upper_rtlivenew',
                         'test_adjusted_positive':'adj_positive_rtlivenew',
                         'infections':'infections_rtlivenew'}, inplace=True)
+
+    df.to_csv(path/"rtlive_new_estimates.csv", index=False)
     return df
