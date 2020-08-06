@@ -143,7 +143,7 @@ def make_state_plots(df:pd.DataFrame, plotspath:Path) -> None:
         plt.close()
 
 
-def estimate_and_plot():
+def estimate_and_plot(_):
 
     # Folder structures and file names
     root    = cwd()
