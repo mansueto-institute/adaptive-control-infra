@@ -146,7 +146,7 @@ def make_state_plots(df:pd.DataFrame, plotspath:Path) -> None:
 def estimate_and_plot(request):
 
     # Folder structures and file names
-    root    = cwd()
+    root    = Path("/tmp")
     data     = root/"data"
     plots    = root/"plots"
     if not data.exists():
