@@ -32,9 +32,6 @@ bucket_name = "us-states-rt-estimation"
 
 # SHEET SYNCING INFO
 sheet_id = "1JTVA-9NuBHW1wWtJ4uP118Xerr3utgMlAx_NSl_fCv8"
-blob_name   = "data/+rt_estimates_comparison.csv"
-filename    = blob_name.replace("data", "/tmp")
-
 
 def run_adaptive_model(df:pd.DataFrame, locationvar:str, CI:float, filepath:Path) -> None:
     '''
@@ -100,18 +97,7 @@ def run_cori_model(filepath:Path, rexepath:Path) -> None:
     subprocess.call([rexepath/"Rscript.exe", filepath/"cori_model.R"], shell=True)
 
 
-def sync_sheet():
-
-    # Download csv from cloud storage
-    print("Downloading csv...")
-    storage.Client()\
-           .bucket(bucket_name)\
-           .blob(blob_name)\
-           .download_to_filename(filename)
-    
-    # load csv 
-    print("Loading csv...")
-    df = pd.read_csv(filename)
+def sync_sheet(df):
 
     # write values to sheet 
     print("Writing values to sheet...")
@@ -130,7 +116,7 @@ def sync_sheet():
     print("Response from sheets client:", response)
 
 
-def estimate_and_plot(_):
+def estimate_and_sync(_):
 
     # Folder structures and file names
     root    = Path("/tmp")
@@ -169,4 +155,4 @@ def estimate_and_plot(_):
     blob   = bucket.blob("data/+rt_estimates_comparison.csv").upload_from_filename(str(data/"+rt_estimates_comparison.csv"), content_type="text/csv")
 
     # Sync sheet with results
-    sync_sheet()
+    sync_sheet(merged_df)
