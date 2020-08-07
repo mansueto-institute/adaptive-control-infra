@@ -135,19 +135,20 @@ def estimate_and_sync(_):
 
     # Pull CSVs of results
     adaptive_df    = pd.read_csv(data/"adaptive_estimates.csv")
-    luis_df        = pd.read_csv(data/"luis_code_estimates.csv")
-    rt_live_new_df = get_new_rt_live_estimates(data)
+    # luis_df        = pd.read_csv(data/"luis_code_estimates.csv")
+    # rt_live_new_df = get_new_rt_live_estimates(data)
     # rt_live_old_df = pd.read_csv(data/"rtlive_old_estimates.csv")
     # cori_df        = pd.read_csv(data/"cori_estimates.csv")
 
     # Merge all results together
-    merged_df      = adaptive_df.merge(luis_df, how='outer', on=['state','date'])
-    merged_df      = merged_df.merge(rt_live_new_df, how='outer', on=['state','date'])
+    merged_df      = adaptive_df
+    # merged_df      = merged_df.merge(luis_df, how='outer', on=['state','date'])
+    # merged_df      = merged_df.merge(rt_live_new_df, how='outer', on=['state','date'])
     # merged_df      = merged_df.merge(rt_live_old_df, how='outer', on=['state','date'])
     # merged_df      = merged_df.merge(cori_df, how='outer', on=['state','date'])
 
     # Fix date formatting and save results
-    merged_df.loc[:,'date'] = pd.to_datetime(merged_df['date'], format='%Y-%m-%d')
+    # merged_df.loc[:,'date'] = pd.to_datetime(merged_df['date'], format='%Y-%m-%d')
     merged_df.to_csv(data/"+rt_estimates_comparison.csv", index=False)
 
     # Upload to Cloud
