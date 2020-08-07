@@ -2,7 +2,10 @@ from pathlib import Path
 from typing  import Dict, Optional, Sequence, Tuple, Callable
 from tqdm    import tqdm
 from io      import StringIO
+
+import google.auth
 from google.cloud import storage
+from googleapiclient.discovery import build
 
 from adaptive.utils      import cwd
 from adaptive.estimators import gamma_prior
@@ -26,6 +29,11 @@ rexepath         = 'C:\\Program Files\\R\\R-3.6.1\\bin\\'
 
 # CLOUD DETAILS 
 bucket_name = "us-states-rt-estimation"
+
+# SHEET SYNCING INFO
+sheet_id = "1JTVA-9NuBHW1wWtJ4uP118Xerr3utgMlAx_NSl_fCv8"
+blob_name   = "data/+rt_estimates_comparison.csv"
+filename    = blob_name.replace("data", "/tmp")
 
 
 def run_adaptive_model(df:pd.DataFrame, locationvar:str, CI:float, filepath:Path) -> None:
@@ -81,7 +89,7 @@ def run_adaptive_model(df:pd.DataFrame, locationvar:str, CI:float, filepath:Path
     merged_df.loc[:,'date'] = pd.to_datetime(merged_df['date'], format='%Y-%m-%d')
 
     # Save out result
-    merged_df.to_csv(filepath/"adaptive_estimates.csv")
+    merged_df.to_csv(filepath/"adaptive_estimates.csv", index=False)
 
 
 def run_cori_model(filepath:Path, rexepath:Path) -> None:
@@ -92,7 +100,37 @@ def run_cori_model(filepath:Path, rexepath:Path) -> None:
     subprocess.call([rexepath/"Rscript.exe", filepath/"cori_model.R"], shell=True)
 
 
-def estimate_and_plot(request):
+def sync_sheet():
+
+    # Download csv from cloud storage
+    print("Downloading csv...")
+    storage.Client()\
+           .bucket(bucket_name)\
+           .blob(blob_name)\
+           .download_to_filename(filename)
+    
+    # load csv 
+    print("Loading csv...")
+    df = pd.read_csv(filename)
+
+    # write values to sheet 
+    print("Writing values to sheet...")
+    values = [list(a) for a in df[["state","date","RR_pred","RR_CI_lower","RR_CI_upper"]].values] 
+    range_ = "Rt_US_States!A2:E"
+
+    credentials, _ = google.auth.default(scopes=['https://www.googleapis.com/auth/spreadsheets'])
+    service  = build('sheets', 'v4', credentials=credentials)
+    response = service.spreadsheets().values()\
+        .update(
+            spreadsheetId=sheet_id, 
+            range=range_, 
+            valueInputOption='USER_ENTERED', 
+            body={"values":values})\
+        .execute()
+    print("Response from sheets client:", response)
+
+
+def estimate_and_plot(_):
 
     # Folder structures and file names
     root    = Path("/tmp")
@@ -124,12 +162,11 @@ def estimate_and_plot(request):
 
     # Fix date formatting and save results
     merged_df.loc[:,'date'] = pd.to_datetime(merged_df['date'], format='%Y-%m-%d')
-    merged_df.to_csv(data/"+rt_estimates_comparison.csv")
+    merged_df.to_csv(data/"+rt_estimates_comparison.csv", index=False)
 
     # Upload to Cloud
     bucket = storage.Client().bucket(bucket_name)
-    all_blob        = bucket.blob("data/+rt_estimates_comparison.csv").upload_from_filename(str(data/"+rt_estimates_comparison.csv"), content_type="text/csv")
-    adaptive_blob   = bucket.blob("data/adaptive_estimates.csv").upload_from_filename(str(data/"adaptive_estimates.csv"), content_type="text/csv")
-    luis_blob       = bucket.blob("data/luis_code_estimates.csv").upload_from_filename(str(data/"luis_code_estimates.csv"), content_type="text/csv")
-    rtlive_new_blob = bucket.blob("data/rtlive_new_estimates.csv").upload_from_filename(str(data/"rtlive_new_estimates.csv"), content_type="text/csv")
-    # rtlive_old_blob = bucket.blob("data/rtlive_old_estimates.csv").upload_from_filename(str(data/"rtlive_old_estimates.csv"), content_type="text/csv")
+    blob   = bucket.blob("data/+rt_estimates_comparison.csv").upload_from_filename(str(data/"+rt_estimates_comparison.csv"), content_type="text/csv")
+
+    # Sync sheet with results
+    sync_sheet()
