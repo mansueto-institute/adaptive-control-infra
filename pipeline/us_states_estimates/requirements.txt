@@ -35,6 +35,8 @@ prompt-toolkit==3.0.5
 ptyprocess==0.6.0
 Pygments==2.6.1
 pylint==2.5.2
+pygpu==0.7.6
+pymc3==3.9.2
 pyparsing==2.4.7
 pyproj==2.6.0
 python-dateutil==2.8.1
@@ -47,6 +49,7 @@ Shapely==1.7.0
 six==1.14.0
 sklearn==0.0
 statsmodels==0.11.1
+theano==1.0.1
 tikzplotlib==0.9.1
 toml==0.10.1
 tqdm==4.45.0
