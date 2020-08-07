@@ -99,6 +99,9 @@ def run_cori_model(filepath:Path, rexepath:Path) -> None:
 
 def sync_sheet(df):
 
+    # Fix missing values
+    df.fillna('', inplace=True)
+
     # write values to sheet 
     print("Writing values to sheet...")
     values = [list(a) for a in df[["state","date","RR_pred","RR_CI_lower","RR_CI_upper"]].values] 
@@ -111,7 +114,7 @@ def sync_sheet(df):
             spreadsheetId=sheet_id, 
             range=range_, 
             valueInputOption='USER_ENTERED', 
-            body={"values":values})\
+            body={"values":values}) \
         .execute()
     print("Response from sheets client:", response)
 
