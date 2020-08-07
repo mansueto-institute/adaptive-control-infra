@@ -142,7 +142,6 @@ def get_delays_from_patient_data(file_path, max_delay=60):
 def get_delay_distribution(file_path, force_update=False):
     """ Returns the empirical delay distribution between symptom onset and
         confirmed positive case. """
-
     # The literature suggests roughly 5 days of incubation before becoming
     # having symptoms. See:
     # https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7081172/
