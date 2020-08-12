@@ -125,7 +125,7 @@ def estimate_and_sync(_):
 
     # Folder structures and file names
     root    = Path("/tmp")
-    data     = root/"data"
+    data    = root/"data"
     if not data.exists():
         data.mkdir()
 
