@@ -1,0 +1,17 @@
+FROM r-base
+
+# Create directory to store data
+RUN mkdir -p /data
+
+# Copy files to container
+COPY cori_model_localstorage.R cori_model_localstorage.R
+COPY data/covidtracking_cases_clean.csv data/covidtracking_cases_clean.csv
+
+# Install R-Packages
+RUN Rscript -e "install.packages(c('EpiEstim','tidyr','dplyr','readr','lubridate'))"
+
+# On startup, run estimation
+CMD Rscript cori_model_localstorage.R
+
+# To run, use the following code in this directory:
+# docker run -it --rm -v ./data:/data sbuschbach/tidyverse-epiestim

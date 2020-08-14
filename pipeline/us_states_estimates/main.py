@@ -140,7 +140,7 @@ def estimate_and_sync(_):
 
     # Pull CSVs of results
     adaptive_df    = pd.read_csv(data/"adaptive_estimates.csv")
-    # luis_df        = pd.read_csv(data/"luis_code_estimates.csv")
+    luis_df        = pd.read_csv(data/"luis_code_estimates.csv")
     rt_live_new_df = get_new_rt_live_estimates(data)
     # rt_live_old_df = pd.read_csv(data/"rtlive_old_estimates.csv")
     # cori_df        = pd.read_csv(data/"cori_estimates.csv")
