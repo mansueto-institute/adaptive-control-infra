@@ -2,4 +2,4 @@ FROM r-base
 
 EXPOSE 8080/tcp
 
-RUN Rscript -e "print('hello world')"
+RUN Rscript --no-save -e "print('hello world')"
