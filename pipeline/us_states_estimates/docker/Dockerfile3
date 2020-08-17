@@ -1,0 +1,6 @@
+FROM r-base
+
+ENV PORT 8080
+EXPOSE 8080
+
+CMD Rscript --no-save -e "print('hello world')"

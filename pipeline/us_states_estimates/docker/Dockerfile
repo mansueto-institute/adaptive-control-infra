@@ -1,7 +1,3 @@
-FROM r-base
-
-ENV PORT 8080
-
-RUN Rscript --no-save -e "print('hello world')"
-
-CMD exec /bin/bash -c "trap : TERM INT; sleep infinity & wait"
+FROM pymc/pymc3
+EXPOSE 8080
+RUN python -c "print('Hello world')"
