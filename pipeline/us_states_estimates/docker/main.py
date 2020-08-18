@@ -121,7 +121,7 @@ def sync_sheet(df):
     print("Response from sheets client:", response)
 
 
-def estimate_and_sync(_):
+def estimate_and_sync():
 
     # Folder structures and file names
     root    = Path("/tmp")

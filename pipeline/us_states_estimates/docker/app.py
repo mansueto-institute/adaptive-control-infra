@@ -5,7 +5,7 @@ app = Flask(__name__)
 
 @app.route('/', methods=['GET'])
 def main():
-    estimate_and_sync(_)
+    estimate_and_sync()
     return "OK"
 
 if __name__ == '__main__':
