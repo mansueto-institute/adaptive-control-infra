@@ -134,13 +134,13 @@ def estimate_and_sync():
 
     # Run models for adaptive and rt.live old version
     run_adaptive_model(df=df, locationvar='state', CI=CI, filepath=data)
-    run_luis_model(df=df, locationvar='state', CI=CI, filepath=data)
+    # run_luis_model(df=df, locationvar='state', CI=CI, filepath=data)
     # run_rtlive_old_model(df=df, locationvar='state', CI=CI, filepath=data)
     # run_cori_model(filepath=root, rexepath=rexepath) # Have to change R file parameters separately
 
     # Pull CSVs of results
     adaptive_df    = pd.read_csv(data/"adaptive_estimates.csv")
-    luis_df        = pd.read_csv(data/"luis_code_estimates.csv")
+    # luis_df        = pd.read_csv(data/"luis_code_estimates.csv")
     rt_live_new_df = get_new_rt_live_estimates(data)
     # rt_live_old_df = pd.read_csv(data/"rtlive_old_estimates.csv")
     # cori_df        = pd.read_csv(data/"cori_estimates.csv")
