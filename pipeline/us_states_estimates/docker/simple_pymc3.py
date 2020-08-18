@@ -20,6 +20,7 @@ y = true_regression_line + np.random.normal(scale=.5, size=size)
 data = dict(x=x, y=y)
 
 with Model() as model: # model specifications in PyMC3 are wrapped in a with-statement
+    
     # Define priors
     sigma = HalfCauchy('sigma', beta=10, testval=1.)
     intercept = Normal('Intercept', 0, sigma=20)
@@ -31,3 +32,4 @@ with Model() as model: # model specifications in PyMC3 are wrapped in a with-sta
 
     # Inference!
     trace = sample(3000, cores=2) # draw 3000 posterior samples using NUTS sampling
+
