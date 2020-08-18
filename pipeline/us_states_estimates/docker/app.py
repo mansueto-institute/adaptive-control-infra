@@ -1,13 +1,11 @@
 from flask import Flask, request
 from main import estimate_and_sync
-from threading import Thread
 
 app = Flask(__name__)
 
-@app.route('/', methods=['GET'])
-def main():
-    thread = Thread(target=estimate_and_sync, args=())
-    thread.start()
+@app.route('/<state>', methods=['GET'])
+def main(state):
+    estimate_and_sync(state)
     return "OK"
 
 if __name__ == '__main__':

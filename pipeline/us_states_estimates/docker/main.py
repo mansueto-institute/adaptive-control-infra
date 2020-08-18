@@ -121,7 +121,7 @@ def sync_sheet(df):
     print("Response from sheets client:", response)
 
 
-def estimate_and_sync():
+def estimate_and_sync(state):
 
     # Folder structures and file names
     root    = Path("/tmp")
@@ -129,8 +129,9 @@ def estimate_and_sync():
     if not data.exists():
         data.mkdir()
 
-    # Get data case data
+    # Get case data
     df = import_clean_smooth_cases(data, notched_smoothing(window=smoothing_window))
+    df = df[df.state == state]
 
     # Run models for adaptive and rt.live old version
     run_adaptive_model(df=df, locationvar='state', CI=CI, filepath=data)
