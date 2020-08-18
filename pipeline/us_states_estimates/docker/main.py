@@ -39,7 +39,7 @@ def run_adaptive_model(df:pd.DataFrame, locationvar:str, CI:float, filepath:Path
     gamma_prior module. Takes in dataframe of cases and saves to csv a dataframe of results.
     '''
     # Initialize results df
-    res_full = pd.DataFrame()
+    res_full = pd.DataFrame(columns=[locationvar,'date'])
 
     # Null smoother to pass to gamma_prior (since smoothing was already done)
     def null_smoother(data: Sequence[float]):
@@ -131,7 +131,7 @@ def estimate_and_sync(state):
 
     # Get case data
     df = import_clean_smooth_cases(data, notched_smoothing(window=smoothing_window))
-    df = df[df.state == state]
+    df = df[df['state'] == state]
 
     # Run models for adaptive and rt.live old version
     run_adaptive_model(df=df, locationvar='state', CI=CI, filepath=data)
