@@ -8,9 +8,10 @@ RUN apt-get update --fix-missing && \
 COPY requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
 
-ENV PORT=8080
+ENV PORT 8080
 EXPOSE 8080
 
-RUN pip install flask
+RUN pip install Flask gunicorn
 COPY app.py ./
-CMD python app.py
+
+CMD exec gunicorn --bind 0.0.0.0:$PORT --workers 1 --threads 8 app:app
