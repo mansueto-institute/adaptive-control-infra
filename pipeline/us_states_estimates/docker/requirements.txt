@@ -12,6 +12,8 @@ cycler==0.10.0
 decorator==4.4.2
 Fiona==1.8.13.post1
 geopandas==0.7.0
+google-auth-httplib2 
+google-auth-oauthlib
 google-cloud-storage==1.7.0
 idna==2.9
 ipython==7.13.0
@@ -25,6 +27,7 @@ matplotlib==3.2.1
 mccabe==0.6.1
 munch==2.5.0
 numpy==1.18.2
+oauth2client
 pandas==1.0.3
 parso==0.7.0
 patsy==0.5.1
