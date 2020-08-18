@@ -12,7 +12,7 @@ from adaptive.estimators import gamma_prior
 from adaptive.smoothing  import notched_smoothing
 
 from etl import import_clean_smooth_cases, get_new_rt_live_estimates
-# from rtlive_old_model import run_rtlive_old_model
+from rtlive_old_model import run_rtlive_old_model
 from luis_model import run_luis_model
 
 import matplotlib.pyplot as plt
@@ -105,9 +105,9 @@ def sync_sheet(df):
 
     # Write values to sheet 
     print("Writing values to sheet...")
-    rtcols = ['RR_pred','RR_CI_lower','RR_CI_upper']
+    rtcols = [x for x in df.columns if x.startswith('RR_')]
     values = [list(a) for a in df[["state","date"]+rtcols].values] 
-    range_ = "Rt_US_States!A2:E"
+    range_ = "Rt_US_States!A2:N"
 
     credentials, _ = google.auth.default(scopes=['https://www.googleapis.com/auth/spreadsheets'])
     service  = build('sheets', 'v4', credentials=credentials)
@@ -134,22 +134,22 @@ def estimate_and_sync():
 
     # Run models for adaptive and rt.live old version
     run_adaptive_model(df=df, locationvar='state', CI=CI, filepath=data)
-    # run_luis_model(df=df, locationvar='state', CI=CI, filepath=data)
-    # run_rtlive_old_model(df=df, locationvar='state', CI=CI, filepath=data)
+    run_luis_model(df=df, locationvar='state', CI=CI, filepath=data)
+    run_rtlive_old_model(df=df, locationvar='state', CI=CI, filepath=data)
     # run_cori_model(filepath=root, rexepath=rexepath) # Have to change R file parameters separately
 
     # Pull CSVs of results
     adaptive_df    = pd.read_csv(data/"adaptive_estimates.csv")
-    # luis_df        = pd.read_csv(data/"luis_code_estimates.csv")
+    luis_df        = pd.read_csv(data/"luis_code_estimates.csv")
     rt_live_new_df = get_new_rt_live_estimates(data)
-    # rt_live_old_df = pd.read_csv(data/"rtlive_old_estimates.csv")
+    rt_live_old_df = pd.read_csv(data/"rtlive_old_estimates.csv")
     # cori_df        = pd.read_csv(data/"cori_estimates.csv")
 
     # Merge all results together
     merged_df      = adaptive_df
-    # merged_df      = merged_df.merge(luis_df, how='outer', on=['state','date'])
+    merged_df      = merged_df.merge(luis_df, how='outer', on=['state','date'])
     merged_df      = merged_df.merge(rt_live_new_df, how='outer', on=['state','date'])
-    # merged_df      = merged_df.merge(rt_live_old_df, how='outer', on=['state','date'])
+    merged_df      = merged_df.merge(rt_live_old_df, how='outer', on=['state','date'])
     # merged_df      = merged_df.merge(cori_df, how='outer', on=['state','date'])
 
     # Fix date formatting and save results
