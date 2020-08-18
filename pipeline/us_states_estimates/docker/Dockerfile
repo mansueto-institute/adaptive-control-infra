@@ -8,7 +8,9 @@ RUN apt-get update --fix-missing && \
 COPY requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
 
+ENV PORT=8080
 EXPOSE 8080
-	
-COPY simple_pymc3.py ./
-CMD python simple_pymc3.py
+
+RUN pip install flask
+COPY app.py ./
+CMD python app.py
