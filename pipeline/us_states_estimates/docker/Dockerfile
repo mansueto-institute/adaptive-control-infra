@@ -7,8 +7,11 @@ RUN apt-get update --fix-missing && \
 
 COPY app.py ./
 COPY main.py ./
-COPY requirements.txt ./
+COPY etl.py ./
+COPY luis_model.py ./
+COPY rtlive_old_model.py ./
 
+COPY requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
 RUN pip install Flask gunicorn
 
