@@ -7,6 +7,8 @@ RUN apt-get update --fix-missing && \
 
 COPY requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
+
+EXPOSE 8080
 	
 COPY simple_pymc3.py ./
 CMD python simple_pymc3.py
