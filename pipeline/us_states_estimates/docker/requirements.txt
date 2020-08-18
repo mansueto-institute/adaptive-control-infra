@@ -12,6 +12,7 @@ cycler==0.10.0
 decorator==4.4.2
 Fiona==1.8.13.post1
 geopandas==0.7.0
+google-api-python-client
 google-auth-httplib2 
 google-auth-oauthlib
 google-cloud-storage==1.7.0
