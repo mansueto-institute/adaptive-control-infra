@@ -1,4 +1,5 @@
 git+https://github.com/mansueto-institute/adaptive-lockdown@master#egg=adaptive
+git+https://github.com/pymc-devs/pymc3
 appnope==0.1.0
 astroid==2.4.1
 attrs==19.3.0

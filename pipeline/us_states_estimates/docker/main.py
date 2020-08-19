@@ -33,6 +33,7 @@ bucket_name = "us-states-rt-estimation"
 # SHEET SYNCING INFO
 sheet_id = "1JTVA-9NuBHW1wWtJ4uP118Xerr3utgMlAx_NSl_fCv8"
 
+
 def run_adaptive_model(df:pd.DataFrame, locationvar:str, CI:float, filepath:Path) -> None:
     '''
     Runs adaptive control model of Rt and smoothed case counts based on what is currently in the 
@@ -95,7 +96,7 @@ def run_cori_model(filepath:Path, rexepath:Path) -> None:
     Runs R script that runs Cori model estimates. Saves results in
     a CSV file.
     '''
-    subprocess.call([rexepath/"Rscript.exe", filepath/"cori_model.R"], shell=True)
+    subprocess.call([rexepath/"Rscript.exe", filepath/"cori_model_localstorage.R"], shell=True)
 
 
 def sync_sheet(df):
@@ -104,22 +105,37 @@ def sync_sheet(df):
     df.fillna('', inplace=True)
     df.loc[:,'date'] = df['date'].astype(str)
 
-    # Write values to sheet 
-    print("Writing values to sheet...")
-    rtcols = [x for x in df.columns if x.startswith('RR_')]
-    values = [list(a) for a in df[["state","date"]+rtcols].values] 
-    range_ = "Rt_US_States!A2:N"
+    # Parameters for writing to spreadsheet 
+    cols   = ["state","date"]+[x for x in df.columns if x.startswith('RR_')]
+    columns = [list(a) for a in df[cols].columns]
+    values  = [list(a) for a in df[cols].values] 
+    rangecolumns = "Rt_US_States!A1:N1"
+    rangevalues  = "Rt_US_States!A2:N"
 
+    # Get access to sheet
+    print("Writing values to sheet...")
     credentials, _ = google.auth.default(scopes=['https://www.googleapis.com/auth/spreadsheets'])
     service  = build('sheets', 'v4', credentials=credentials)
+
+    # Write columns
     response = service.spreadsheets().values()\
         .update(
             spreadsheetId=sheet_id, 
-            range=range_, 
+            range=rangecolumns, 
+            valueInputOption='USER_ENTERED', 
+            body={"values":columns}) \
+        .execute()
+    print("Response from sheets client for columns:", response)
+
+    # Write values
+    response = service.spreadsheets().values()\
+        .update(
+            spreadsheetId=sheet_id, 
+            range=rangevalues, 
             valueInputOption='USER_ENTERED', 
             body={"values":values}) \
         .execute()
-    print("Response from sheets client:", response)
+    print("Response from sheets client for columns:", response)
 
 
 def estimate_and_sync(state):
