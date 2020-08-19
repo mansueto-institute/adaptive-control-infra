@@ -75,6 +75,7 @@ def run_adaptive_model(df:pd.DataFrame, locationvar:str, CI:float, filepath:Path
         res_full = pd.concat([res_full,res], axis=0)
     
     # Merge results back onto input df and return
+    df.loc[:,'date'] = pd.to_datetime(df['date'], format='%Y-%m-%d')
     merged_df = df.merge(res_full, how='outer', on=[locationvar,'date'])
 
     # Parameters for filtering raw df
