@@ -40,6 +40,7 @@ def run_adaptive_model(df:pd.DataFrame, locationvar:str, CI:float, filepath:Path
     '''
     # Initialize results df
     res_full = pd.DataFrame(columns=[locationvar,'date'])
+    res_full.loc[:,'date'] = pd.to_datetime(res_full['date'], format='%Y-%m-%d')
 
     # Null smoother to pass to gamma_prior (since smoothing was already done)
     def null_smoother(data: Sequence[float]):
@@ -75,7 +76,6 @@ def run_adaptive_model(df:pd.DataFrame, locationvar:str, CI:float, filepath:Path
         res_full = pd.concat([res_full,res], axis=0)
     
     # Merge results back onto input df and return
-    df.loc[:,'date'] = pd.to_datetime(df['date'], format='%Y-%m-%d')
     merged_df = df.merge(res_full, how='outer', on=[locationvar,'date'])
 
     # Parameters for filtering raw df
