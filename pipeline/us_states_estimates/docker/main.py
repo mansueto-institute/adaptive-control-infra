@@ -107,10 +107,10 @@ def sync_sheet(df):
 
     # Parameters for writing to spreadsheet 
     cols   = ["state","date"]+[x for x in df.columns if x.startswith('RR_')]
-    columns = [list(a) for a in df[cols].columns]
+    # columns = [list(a) for a in df[cols].columns]
     values  = [list(a) for a in df[cols].values] 
-    rangecolumns = "Rt_US_States!A1:Q"
-    rangevalues  = "Rt_US_States!A2:Q"
+    # rangecolumns = "Rt_US_States!A1:N"
+    rangevalues  = "Rt_US_States!A2:N"
 
     # Get access to sheet
     print("Writing values to sheet...")
@@ -118,14 +118,14 @@ def sync_sheet(df):
     service  = build('sheets', 'v4', credentials=credentials)
 
     # Write columns
-    response = service.spreadsheets().values()\
-        .update(
-            spreadsheetId=sheet_id, 
-            range=rangecolumns, 
-            valueInputOption='USER_ENTERED', 
-            body={"values":columns}) \
-        .execute()
-    print("Response from sheets client for columns:", response)
+    # response = service.spreadsheets().values()\
+    #     .update(
+    #         spreadsheetId=sheet_id, 
+    #         range=rangecolumns, 
+    #         valueInputOption='USER_ENTERED', 
+    #         body={"values":columns}) \
+    #     .execute()
+    # print("Response from sheets client for columns:", response)
 
     # Write values
     response = service.spreadsheets().values()\
