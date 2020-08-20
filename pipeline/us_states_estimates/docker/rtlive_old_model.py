@@ -205,7 +205,7 @@ def adjust_onset_for_right_censorship(onset, p_delay):
 
 class MCMCModel(object):
     
-    def __init__(self, region, onset, cumulative_p_delay, window=100):
+    def __init__(self, region, onset, cumulative_p_delay, window=160):
         
         # Just for identification purposes
         self.region = region

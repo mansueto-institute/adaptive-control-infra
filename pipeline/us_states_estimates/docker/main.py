@@ -25,7 +25,6 @@ import subprocess
 # PARAMETERS
 CI               = 0.95
 smoothing_window = 7
-rexepath         = 'C:\\Program Files\\R\\R-3.6.1\\bin\\'
 
 # CLOUD DETAILS 
 bucket_name = "us-states-rt-estimation"
@@ -90,12 +89,12 @@ def run_adaptive_model(df:pd.DataFrame, locationvar:str, CI:float, filepath:Path
     merged_df.to_csv(filepath/"adaptive_estimates.csv", index=False)
 
 
-def run_cori_model(filepath:Path, rexepath:Path) -> None:
+def run_cori_model(filepath:Path) -> None:
     '''
     Runs R script that runs Cori model estimates. Saves results in
     a CSV file.
     '''
-    subprocess.call([rexepath/"Rscript.exe", filepath/"cori_model_localstorage.R"], shell=True)
+    subprocess.call(["Rscript", filepath/"cori_model_localstorage.R"], shell=True)
 
 
 def sync_sheet(df):
@@ -154,21 +153,21 @@ def estimate_and_sync(state):
     run_adaptive_model(df=df, locationvar='state', CI=CI, filepath=data)
     run_luis_model(df=df, locationvar='state', CI=CI, filepath=data)
     run_rtlive_old_model(df=df, locationvar='state', CI=CI, filepath=data)
-    # run_cori_model(filepath=root, rexepath=rexepath) # Have to change R file parameters separately
+    run_cori_model(filepath=root, rexepath=rexepath) # Have to change R file parameters separately
 
     # Pull CSVs of results
     adaptive_df    = pd.read_csv(data/"adaptive_estimates.csv")
     luis_df        = pd.read_csv(data/"luis_code_estimates.csv")
     rt_live_new_df = get_new_rt_live_estimates(data)
     rt_live_old_df = pd.read_csv(data/"rtlive_old_estimates.csv")
-    # cori_df        = pd.read_csv(data/"cori_estimates.csv")
+    cori_df        = pd.read_csv(data/"cori_estimates.csv")
 
     # Merge all results together
     merged_df      = adaptive_df
     merged_df      = merged_df.merge(luis_df, how='outer', on=['state','date'])
     merged_df      = merged_df.merge(rt_live_new_df, how='outer', on=['state','date'])
     merged_df      = merged_df.merge(rt_live_old_df, how='outer', on=['state','date'])
-    # merged_df      = merged_df.merge(cori_df, how='outer', on=['state','date'])
+    merged_df      = merged_df.merge(cori_df, how='outer', on=['state','date'])
 
     # Fix date formatting and save results
     # merged_df.loc[:,'date'] = pd.to_datetime(merged_df['date'], format='%Y-%m-%d')
