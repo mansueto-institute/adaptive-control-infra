@@ -16,7 +16,6 @@ def run_luis_model(df:pd.DataFrame, locationvar:str, CI:float, filepath:Path) ->
     # Loop through locs
     locs = df[locationvar].unique()
     returndf = pd.DataFrame()
-    print(f"Estimating Luis code Rt values for each {locationvar}...")
     for loc in tqdm(locs):
 
         from scipy.stats import gamma # not sure why this needs to be recalled after each loc, but otherwite get a type exception
