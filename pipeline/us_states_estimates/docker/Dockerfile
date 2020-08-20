@@ -13,5 +13,4 @@ ENV PORT 8080
 EXPOSE 8080
 
 # On startup, bind app to port 8080 and run
-# CMD exec gunicorn --bind 0.0.0.0:$PORT --workers 1 --threads 8 app:app
-CMD python3
+CMD exec gunicorn --bind 0.0.0.0:$PORT --workers 1 --threads 8 app:app
