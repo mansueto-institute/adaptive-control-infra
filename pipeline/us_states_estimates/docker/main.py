@@ -47,8 +47,7 @@ def run_adaptive_model(df:pd.DataFrame, locationvar:str, CI:float, filepath:Path
         return data
 
     # Loop through each location
-    print(f"Estimating Adaptive Rt values for each {locationvar}...")
-    for loc in tqdm(df[locationvar].unique()):
+    for loc in df[locationvar].unique():
                 
         # Calculate Rt for that location
         loc_df = df[df[locationvar] == loc].set_index('date')

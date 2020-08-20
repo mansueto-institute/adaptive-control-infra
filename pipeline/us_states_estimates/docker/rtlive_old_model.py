@@ -31,9 +31,7 @@ def run_rtlive_old_model(df:pd.DataFrame, locationvar:str, CI:float, filepath:Pa
     for loc in df[locationvar].unique():
         
         if loc in models:
-            print(f"Skipping {loc}, already in cache")
             continue
-        print(f'Working on {loc}')
         loc_df = df[df[locationvar] == loc].set_index('date')
         models[loc] = create_and_run_model(loc, loc_df, p_delay)
                 
@@ -57,7 +55,8 @@ def run_rtlive_old_model(df:pd.DataFrame, locationvar:str, CI:float, filepath:Pa
 
     # Parameters for filtering raw df
     kept_columns   = ['date',locationvar,'mean','lower_95','upper_95']
-    results = results[kept_columns].reset_index()
+    results = results[kept_columns].reset_index(drop=True)
+    print(results)
     
     # Format date properly and rename columns
     df.loc[:,'date'] = pd.to_datetime(df['date'], format='%Y-%m-%d')
