@@ -56,13 +56,12 @@ def run_rtlive_old_model(df:pd.DataFrame, locationvar:str, CI:float, filepath:Pa
     # Parameters for filtering raw df
     kept_columns   = ['date',locationvar,'mean','lower_95','upper_95']
     results = results[kept_columns].reset_index(drop=True)
-    print(results)
     
     # Format date properly and rename columns
-    df.loc[:,'date'] = pd.to_datetime(df['date'], format='%Y-%m-%d')
-    df.rename(columns={'region':locationvar,'mean':'RR_pred_rtliveold',
-                       'lower_95':'RR_lower_rtliveold', 
-                       'upper_95':'RR_upper_rtliveold'}, inplace=True)
+    results.loc[:,'date'] = pd.to_datetime(results['date'], format='%Y-%m-%d')
+    results.rename(columns={'region':locationvar, 'mean':'RR_pred_rtliveold',
+                            'lower_95':'RR_lower_rtliveold', 
+                            'upper_95':'RR_upper_rtliveold'}, inplace=True)
 
     # Save results
     results.to_csv(filepath/'rtlive_old_estimates.csv', index=False)
