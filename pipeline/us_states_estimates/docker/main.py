@@ -107,10 +107,11 @@ def sync_sheet(df):
 
     # Parameters for writing to spreadsheet 
     cols   = ["state","date"]+[x for x in df.columns if x.startswith('RR_')]
-    columns = [[a] for a in df[cols].columns]
+    columns = [a for a in df[cols].columns]
     values  = [list(a) for a in df[cols].values] 
-    rangecolumns = "Rt_US_States!A1:N1"
-    rangevalues  = "Rt_US_States!A2:N"
+    lastcol = chr(ord('A') + len(columns) - 1)
+    rangecolumns = f"Rt_US_States!A1:{lastcol}1"
+    rangevalues  = f"Rt_US_States!A2:{lastcol}"
 
     # Get access to sheet
     print("Writing values to sheet...")
