@@ -119,14 +119,14 @@ def sync_sheet(df):
     service  = build('sheets', 'v4', credentials=credentials)
 
     # Write columns
-    response = service.spreadsheets().values()\
-        .update(
-            spreadsheetId=sheet_id, 
-            range=rangecolumns, 
-            valueInputOption='USER_ENTERED', 
-            body={"values":columns}) \
-        .execute()
-    print("Response from sheets client for columns:", response)
+    # response = service.spreadsheets().values()\
+    #     .update(
+    #         spreadsheetId=sheet_id, 
+    #         range=rangecolumns, 
+    #         valueInputOption='USER_ENTERED', 
+    #         body={"values":columns}) \
+    #     .execute()
+    # print("Response from sheets client for columns:", response)
 
     # Write values
     response = service.spreadsheets().values()\
