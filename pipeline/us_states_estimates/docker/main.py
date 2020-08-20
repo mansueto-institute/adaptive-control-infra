@@ -1,6 +1,5 @@
 from pathlib import Path
 from typing  import Dict, Optional, Sequence, Tuple, Callable
-from tqdm    import tqdm
 from io      import StringIO
 
 import google.auth
@@ -28,8 +27,6 @@ smoothing_window = 7
 
 # CLOUD DETAILS 
 bucket_name = "us-states-rt-estimation"
-
-# SHEET SYNCING INFO
 sheet_id = "1JTVA-9NuBHW1wWtJ4uP118Xerr3utgMlAx_NSl_fCv8"
 
 
@@ -170,12 +167,11 @@ def estimate_and_sync(state):
     merged_df      = merged_df.merge(cori_df, how='outer', on=['state','date'])
 
     # Fix date formatting and save results
-    # merged_df.loc[:,'date'] = pd.to_datetime(merged_df['date'], format='%Y-%m-%d')
-    merged_df.to_csv(data/"+rt_estimates_comparison.csv", index=False)
+    merged_df.to_csv(data/f"+rt_estimates_comparison_{state}.csv", index=False)
 
     # Upload to Cloud
     bucket = storage.Client().bucket(bucket_name)
-    blob   = bucket.blob("data/+rt_estimates_comparison.csv").upload_from_filename(str(data/"+rt_estimates_comparison.csv"), content_type="text/csv")
+    blob   = bucket.blob(f"data/+rt_estimates_comparison_{state}.csv").upload_from_filename(str(data/f"+rt_estimates_comparison_{state}.csv"), content_type="text/csv")
 
     # Sync sheet with results
     sync_sheet(merged_df)

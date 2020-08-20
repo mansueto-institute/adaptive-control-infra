@@ -7,7 +7,6 @@ from numpy import log as ln
 from typing import Callable
 from datetime import datetime, timedelta
 from pathlib import Path
-from tqdm import tqdm
 
 def run_luis_model(df:pd.DataFrame, locationvar:str, CI:float, filepath:Path) -> None:
 
@@ -16,7 +15,7 @@ def run_luis_model(df:pd.DataFrame, locationvar:str, CI:float, filepath:Path) ->
     # Loop through locs
     locs = df[locationvar].unique()
     returndf = pd.DataFrame()
-    for loc in tqdm(locs):
+    for loc in locs:
 
         from scipy.stats import gamma # not sure why this needs to be recalled after each loc, but otherwite get a type exception
         import numpy as np
@@ -33,6 +32,7 @@ def run_luis_model(df:pd.DataFrame, locationvar:str, CI:float, filepath:Path) ->
         dconfirmed = np.diff(confirmed)
         for ii in range(len(dconfirmed)):
             if dconfirmed[ii] < 0. : dconfirmed[ii] = 0.
+            if np.isnan(dconfirmed[ii]) : dconfirmed[ii] = 0. # This is a new line of code from Steve
         xd=dates[1:]
 
         # Smoothing over sdays (number of days) moving window, averages large chunking in reporting in consecutive days        
@@ -95,8 +95,11 @@ def run_luis_model(df:pd.DataFrame, locationvar:str, CI:float, filepath:Path) ->
                 
                 pred.append(mean) # the expected value of new cases
                 testciM=nbinom.ppf(CI, r, p) # these are the boundaries of the CI% confidence interval  for new cases
-                pstdM.append(testciM)
                 testcim=nbinom.ppf(1-CI, r, p)
+
+                if (testciM == 0) & (testcim == 0): testciM = 1
+
+                pstdM.append(testciM)
                 pstdm.append(testcim)
                 
                 np=p
@@ -116,7 +119,7 @@ def run_luis_model(df:pd.DataFrame, locationvar:str, CI:float, filepath:Path) ->
                     nnp=0.95*np # this doubles the variance, which tends to be small after many Bayesian steps
                     nr= nr*(nnp/np)*( (1.-np)/(1.-nnp) ) # this assignement preserves the mean of expected cases
                     np=nnp
-                    mean, var, skew, kurt = nbinom.stats(nr, np, moments='mvsk')
+                    mean, _, _, _ = nbinom.stats(nr, np, moments='mvsk')
                     testciM=nbinom.ppf(CI, nr, np)
                     testcim=nbinom.ppf(1-CI, nr, np)
                     
