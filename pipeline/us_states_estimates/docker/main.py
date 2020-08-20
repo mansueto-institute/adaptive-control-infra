@@ -109,7 +109,7 @@ def sync_sheet(df):
     cols   = ["state","date"]+[x for x in df.columns if x.startswith('RR_')]
     columns = [[a for a in df[cols].columns]]
     values  = [list(a) for a in df[cols].values] 
-    lastcol = chr(ord('A') + len(columns) - 1)
+    lastcol = chr(ord('A') + len(df[cols].columns) - 1)
     rangecolumns = f"Rt_US_States!A1:{lastcol}1"
     rangevalues  = f"Rt_US_States!A2:{lastcol}"
 
