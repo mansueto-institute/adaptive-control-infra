@@ -109,8 +109,8 @@ def sync_sheet(df):
     cols   = ["state","date"]+[x for x in df.columns if x.startswith('RR_')]
     columns = [list(a) for a in df[cols].columns]
     values  = [list(a) for a in df[cols].values] 
-    rangecolumns = "Rt_US_States!A1:P"
-    rangevalues  = "Rt_US_States!A2:P"
+    rangecolumns = "Rt_US_States!A1:Q"
+    rangevalues  = "Rt_US_States!A2:Q"
 
     # Get access to sheet
     print("Writing values to sheet...")
