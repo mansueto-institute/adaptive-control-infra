@@ -86,12 +86,12 @@ def run_adaptive_model(df:pd.DataFrame, locationvar:str, CI:float, filepath:Path
     merged_df.to_csv(filepath/"adaptive_estimates.csv", index=False)
 
 
-def run_cori_model(filepath:Path) -> None:
+def run_cori_model(filepath:Path, state:str) -> None:
     '''
     Runs R script that runs Cori model estimates. Saves results in
     a CSV file.
     '''
-    subprocess.call(["Rscript", filepath/"cori_model_localstorage.R"], shell=True)
+    subprocess.run(["Rscript", "cori_model_localstorage.R", state], universal_newlines=True)
 
 
 def sync_sheet(df):
@@ -137,8 +137,7 @@ def sync_sheet(df):
 def estimate_and_sync(state):
 
     # Folder structures and file names
-    root    = Path("/tmp")
-    data    = root/"data"
+    data    = Path("/data")
     if not data.exists():
         data.mkdir()
 
@@ -150,7 +149,7 @@ def estimate_and_sync(state):
     run_adaptive_model(df=df, locationvar='state', CI=CI, filepath=data)
     run_luis_model(df=df, locationvar='state', CI=CI, filepath=data)
     run_rtlive_old_model(df=df, locationvar='state', CI=CI, filepath=data)
-    run_cori_model(filepath=root) # Have to change R file parameters separately
+    run_cori_model(filepath=data, state=state) # Have to change R file parameters separately
 
     # Pull CSVs of results
     adaptive_df    = pd.read_csv(data/"adaptive_estimates.csv")

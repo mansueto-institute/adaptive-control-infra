@@ -1,9 +1,9 @@
 ##### Packages ##### 
-library(tidyr)
-library(dplyr)
-library(readr)
-library(lubridate)
-library(EpiEstim)
+suppressPackageStartupMessages(library(tidyr))
+suppressPackageStartupMessages(library(dplyr))
+suppressPackageStartupMessages(library(readr))
+suppressPackageStartupMessages(library(lubridate))
+suppressPackageStartupMessages(library(EpiEstim))
 
 
 ##### Global parameters #####
@@ -18,7 +18,6 @@ SI_std      <- 3
 SI_std_std  <- 2
 SI_std_min  <- max(SI_std-2,0)
 SI_std_max  <- SI_std+2
-
 
 #####  Helper functions ##### 
 na_to_0 <- function(vec){
@@ -40,11 +39,14 @@ df  <- raw %>%
 df$positive_diff_smooth <- na_to_0(df$positive_diff_smooth) 
 df$positive_diff_smooth <- neg_to_0(df$positive_diff_smooth) 
 
+# Subet to just state of interest
+mystate <- commandArgs(trailingOnly = TRUE)
+mystate <- as.character(mystate)
+df <- df %>% filter(state==mystate)
+
 #####  Loop through each state ##### 
 fulldf <- data.frame()
-for(statename in levels(df$state)) {
-  
-  print(paste0("Estimating Rt for ",statename,"..."))
+for(statename in levels(droplevels(df$state))) {
   
   # Subset to just state and calculate moving averages
   state_df  <- df %>% filter(state == statename)
