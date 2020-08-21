@@ -173,4 +173,4 @@ def estimate_and_sync(state):
     blob   = bucket.blob(f"data/+rt_estimates_comparison_{state}.csv").upload_from_filename(str(data/f"+rt_estimates_comparison_{state}.csv"), content_type="text/csv")
 
     # Sync sheet with results
-    sync_sheet(merged_df)
+    # sync_sheet(merged_df)
