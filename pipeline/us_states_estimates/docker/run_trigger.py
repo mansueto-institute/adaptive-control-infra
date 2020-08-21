@@ -26,9 +26,9 @@ def estimate_1_state_rt(state):
         if statcode != 200:
             print(f"\tFailed at estimating Rt again for {state}. Giving up...")
         else:
-            print(f"\tSuccesfully estimated Rt for {state} on 2nd try")
+            print(f"Success estimating Rt for {state}! (2nd try)")
     else:
-        print(f"Success estimating Rt for {state}!")
+        print(f"Success estimating Rt for {state}! (1st try)")
 
 
 def estimate_every_state_rt(_):
