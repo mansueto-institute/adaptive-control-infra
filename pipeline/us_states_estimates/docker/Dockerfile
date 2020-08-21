@@ -4,10 +4,6 @@ from sbuschbach/adaptive_control_rpython
 COPY *.py ./
 COPY cori_model.R ./
 
-# Copy data into new folder
-# RUN mkdir -p /data
-# COPY data/covidtracking_cases_clean.csv data/covidtracking_cases_clean.csv
-
 # Use port 8080
 ENV PORT 8080
 EXPOSE 8080
