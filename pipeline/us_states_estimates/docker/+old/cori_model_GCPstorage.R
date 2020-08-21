@@ -1,11 +1,11 @@
 ##### Packages ##### 
-
-library(tidyverse)
-library(lubridate)
-library(EpiEstim)
-
-library(googleAuthR)         
-library(googleCloudStorageR) 
+suppressPackageStartupMessages(library(tidyr))
+suppressPackageStartupMessages(library(dplyr))
+suppressPackageStartupMessages(library(readr))
+suppressPackageStartupMessages(library(lubridate))
+suppressPackageStartupMessages(library(EpiEstim))
+suppressPackageStartupMessages(library(googleAuthR))     
+suppressPackageStartupMessages(library(googleCloudStorageR))
 
 
 ##### Global parameters #####
@@ -43,11 +43,14 @@ df  <- raw %>%
 df$positive_diff_smooth <- na_to_0(df$positive_diff_smooth) 
 df$positive_diff_smooth <- neg_to_0(df$positive_diff_smooth) 
 
+# Subet to just state of interest
+mystate <- commandArgs(trailingOnly = TRUE)
+mystate <- as.character(mystate)
+df <- df %>% filter(state==mystate)
+
 #####  Loop through each state ##### 
 fulldf <- data.frame()
-for(statename in levels(df$state)) {
-  
-  print(paste0("Estimating Rt for ",statename,"..."))
+for(statename in levels(droplevels(df$state))) {
   
   # Subset to just state and calculate moving averages
   state_df  <- df %>% filter(state == statename)
@@ -55,7 +58,8 @@ for(statename in levels(df$state)) {
   # Other clean up
   idat <- state_df %>%
           complete(time = seq.Date(min(time), max(time), by='day')) %>%
-          mutate_at(.vars = c('positive','death','positive_diff','positive_diff_smooth', 'death_diff', 'death_diff_smooth'), 
+          mutate_at(.vars = c('positive','death','positive_diff','death_diff',
+                              'positive_diff_smooth','death_diff_smooth'), 
                     .funs = function(xx){ifelse(is.na(xx), 0, xx)}) %>%
           arrange(time) %>%
           rename(dates=time, I=positive_diff_smooth)
@@ -104,11 +108,15 @@ for(statename in levels(df$state)) {
 ## Authenticate on GCE for google cloud services
 googleAuthR::gar_gce_auth()
 
-tmp <- tempfile(fileext = ".csv")
-on.exit(unlink(tmp))
-write.csv(fulldf, file=tmp, row.names=FALSE)
+# Save a temp file to upload
+#tmp <- tempfile(fileext = ".csv")
+#on.exit(unlink(tmp))
+#write.csv(fulldf, file=tmp, row.names=FALSE)
+
+# Save out
+write_csv(fulldf, "data/cori_estimates.csv")
 
 ## Upload
-gcs_upload(tmp, 
-           bucket = bucket_name, 
-           name = "data/cori_estimates.csv")
+#gcs_upload(tmp, 
+#           bucket = bucket_name, 
+#           name = paste0("data/cori_estimates_", mystate, ".csv"))
