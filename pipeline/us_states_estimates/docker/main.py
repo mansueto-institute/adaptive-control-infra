@@ -91,7 +91,7 @@ def run_cori_model(filepath:Path, state:str) -> None:
     Runs R script that runs Cori model estimates. Saves results in
     a CSV file.
     '''
-    subprocess.run(["Rscript", "cori_model_localstorage.R", state], universal_newlines=True)
+    subprocess.run(["Rscript", "cori_model.R", state], universal_newlines=True)
 
 
 def sync_sheet(df):
