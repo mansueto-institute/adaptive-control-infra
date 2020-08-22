@@ -4,6 +4,7 @@ from threading import Thread
 
 import pandas as pd
 import requests
+import time
 
 
 def estimate_1_state_rt(state):
@@ -43,9 +44,22 @@ def estimate_every_state_rt(_):
     states = df['state'].unique()
 
     # Do estimation for each state
+    threads = []
     for state in states:
+
+        # Get thread going
         thr = Thread(target=estimate_1_state_rt, args=(state,))
         thr.start()
+        threads.append(thr)
+
+        # Wait 5 seconds to give time to scale up
+        time.sleep(5)
+
+         # Only work on ten threads at a time
+        if len(threads) % 5 == 0:
+            for thr in threads:
+                thr.join()
+
 
 
 

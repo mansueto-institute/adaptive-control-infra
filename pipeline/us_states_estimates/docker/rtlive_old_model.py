@@ -24,7 +24,7 @@ def run_rtlive_old_model(df:pd.DataFrame, locationvar:str, CI:float, filepath:Pa
     saves out a CSV of results.
     '''
     # Get delay empirical distribution
-    p_delay = get_delay_distribution(file_path=filepath, force_update=True)
+    p_delay = get_delay_distribution(file_path=filepath, force_update=False)
 
     # Run model for each location
     models = {}
