@@ -27,20 +27,24 @@ def reporting_diff(_):
     print("downloading latest data")
     paths = {
         "v3": [data_path(i) for i in (1, 2)],
-        "v4": [data_path(i) for i in (3, 4, 5, 6, 7, 8, 9, 10, 11, 12)]
+        "v4": [data_path(i) for i in range(3, 21)]
     }
 
     for target in paths['v3'] + paths['v4']:
-        download_data(tmp, target)
+        try:
+            download_data(tmp, target)
+        except:
+            pass 
 
     df_new = load_all_data(
         v3_paths = [tmp/filepath for filepath in paths['v3']], 
-        v4_paths = [tmp/filepath for filepath in paths['v4']]
+        v4_paths = [tmp/filepath for filepath in paths['v4'] if (tmp/filepath).exists()]
     )
 
     print("calculating diff")
-    df_new["rowhash"] = df_new.apply(lambda x: hash(tuple(x)), axis = 1)
-    df_new["report_date"] = run_date 
+    df_new["rowhash"] = df_new[["patient_number", "date_announced", "detected_district", "detected_state","current_status", "status_change_date", "num_cases"]].apply(lambda x: hash(tuple(x)), axis = 1)
+    df_new = df_new.drop_duplicates(subset=["rowhash"], keep="first")
+    df_new["report_date"] = run_date
     diff = df_new[~df_new.rowhash.isin(df_old.rowhash)]
     num_new_rows = len(diff)
 
