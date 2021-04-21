@@ -3,8 +3,9 @@ from pathlib import Path
 import pandas as pd
 import requests
 from bs4 import BeautifulSoup as bs
-from epimargin.etl.covid19india import (data_path, download_data,
-                                        get_time_series, load_all_data)
+from epimargin.etl.commons import download_data
+from epimargin.etl.covid19india import (data_path, get_time_series,
+                                        load_all_data)
 from epimargin.utils import mkdir
 from google.cloud import storage
 
