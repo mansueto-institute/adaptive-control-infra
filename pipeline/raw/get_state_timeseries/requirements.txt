@@ -1,4 +1,4 @@
-git+https://github.com/COVID-IWG/epimargin@master#egg=adaptive
+git+https://github.com/COVID-IWG/epimargin@master#egg=epimargin
 appnope==0.1.0
 astroid==2.4.1
 attrs==19.3.0
