@@ -53,7 +53,7 @@ def run_download(_):
     print("Uploading time series to storage bucket.")
     storage.Client()\
         .bucket(bucket_name)\
-        .blob("pipeline/raw/case_time_series.csv")\
+        .blob("pipeline/raw/state_case_timeseries.csv")\
         .upload_from_filename(
             str(data/"state_case_timeseries.csv"), 
             content_type = "text/csv")
