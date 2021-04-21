@@ -59,4 +59,4 @@ def run_download(_):
             str(data/"state_case_timeseries.csv"), 
             content_type = "text/csv")
 
-    
+    return 'OK!'
