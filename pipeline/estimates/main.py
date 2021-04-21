@@ -10,12 +10,12 @@ import pandas as pd
 from statsmodels.regression.linear_model import OLS
 from statsmodels.tools import add_constant
 
-from adaptive.estimators import gamma_prior
-from adaptive.etl.covid19india import (download_data, get_time_series,
+from epimargin.estimators import gamma_prior
+from epimargin.etl.covid19india import (download_data, get_time_series,
                                        load_statewise_data, state_name_lookup)
-from adaptive.plots import plot_RR_est
-from adaptive.smoothing import convolution
-from adaptive.utils import cwd, days
+from epimargin.plots import plot_RR_est
+from epimargin.smoothing import notched_smoothing
+from epimargin.utils import cwd, days
 
 simplefilter("ignore")
 
@@ -50,7 +50,7 @@ def run_estimates(_):
     timeseries = []
 
     # country level
-    (dates, RR_pred, RR_CI_upper, RR_CI_lower, *_) = gamma_prior(country_time_series["Hospitalized"].iloc[:-1], CI = CI, smoothing = convolution(window = smoothing)) 
+    (dates, RR_pred, RR_CI_upper, RR_CI_lower, *_) = gamma_prior(country_time_series["Hospitalized"].iloc[:-1], CI = CI, smoothing = notched_smoothing(window = smoothing)) 
 
     country_code = state_name_lookup["India"]
     for row in zip(dates, RR_pred, RR_CI_upper, RR_CI_lower):
@@ -62,7 +62,7 @@ def run_estimates(_):
     for state in states:
         state_code = state_name_lookup[state]
         try: 
-            (dates, RR_pred, RR_CI_upper, RR_CI_lower, *_) = gamma_prior(state_time_series.loc[state]['Hospitalized'], CI = CI, smoothing = convolution(window = smoothing))
+            (dates, RR_pred, RR_CI_upper, RR_CI_lower, *_) = gamma_prior(state_time_series.loc[state]['Hospitalized'], CI = CI, smoothing = notched_smoothing(window = smoothing))
             for row in zip(dates, RR_pred, RR_CI_upper, RR_CI_lower):
                 timeseries.append((state_code, *row))
             estimates.append((state_code, RR_pred[-1], RR_CI_lower[-1], RR_CI_upper[-1], project(dates, RR_pred, smoothing)))
@@ -83,6 +83,6 @@ def run_estimates(_):
     timeseries.to_csv(data/"Rt_timeseries_india.csv")
 
     # upload to cloud 
-    bucket = storage.Client().bucket(bucket_name)
-    estimate_blob   = bucket.blob("estimates/Rt_estimates.csv").upload_from_filename(str(data/"Rt_estimates.csv"), content_type = "text/csv")
-    timeseries_blob = bucket.blob("estimates/Rt_timeseries_india.csv").upload_from_filename(str(data/"Rt_timeseries_india.csv"), content_type = "text/csv")
+    
+    bucket.blob("estimates/Rt_estimates.csv")       .upload_from_filename(str(data/"Rt_estimates.csv"),        content_type = "text/csv")
+    bucket.blob("estimates/Rt_timeseries_india.csv").upload_from_filename(str(data/"Rt_timeseries_india.csv"), content_type = "text/csv")
