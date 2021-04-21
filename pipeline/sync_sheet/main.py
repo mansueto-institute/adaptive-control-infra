@@ -21,23 +21,23 @@ def sync_sheet(_):
         .bucket(bucket_name)\
         .blob(blob_name)\
         .download_to_filename(filename)
-    
-    # load csv 
+
+    # load csv
     print("loading csv")
     df = pandas.read_csv(filename)
 
-    # write values to sheet 
+    # write values to sheet
     print("writing values to sheet")
-    values = [list(a) for a in df[["state", "date", "Rt", "Rt_upper", "Rt_lower"]].values] 
-    range_ = "Rt_timeseries_india!A2:E"
+    values = [list(a) for a in df[["state", "date", "Rt", "Rt_upper", "Rt_lower"]].values]
+    range_ = "Rt_timeseries_india!A2:E2"
 
     credentials, _ = google.auth.default(scopes=['https://www.googleapis.com/auth/spreadsheets'])
     service  = build('sheets', 'v4', credentials=credentials)
     response = service.spreadsheets().values()\
         .update(
-            spreadsheetId=sheet_id, 
-            range=range_, 
-            valueInputOption='USER_ENTERED', 
+            spreadsheetId=sheet_id,
+            range=range_,
+            valueInputOption='USER_ENTERED',
             body={"values":values})\
         .execute()
     print("response from sheets client", response)
