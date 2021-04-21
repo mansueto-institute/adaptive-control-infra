@@ -32,7 +32,7 @@ def sync_sheet(_):
     range_ = "Rt_timeseries_india!A2:E2"
 
     credentials, _ = google.auth.default(scopes=['https://www.googleapis.com/auth/spreadsheets'])
-    service  = build('sheets', 'v4', credentials=credentials)
+    service  = build('sheets', 'v4', credentials=credentials, cache_discovery = False)
     response = service.spreadsheets().values()\
         .update(
             spreadsheetId=sheet_id,
