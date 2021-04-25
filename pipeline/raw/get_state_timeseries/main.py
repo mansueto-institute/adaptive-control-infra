@@ -43,20 +43,38 @@ def run_download(_):
         download_data(data, path)
 
     print("Assembling case time series from case reports.")
-    load_all_data(
+    case_reports = load_all_data(
         v3_paths = [data/path for path in paths['v3']], 
         v4_paths = [data/path for path in paths['v4']]
-    )\
-    .pipe(lambda _: get_time_series(_, ["detected_state", "detected_district"]))\
-    .to_csv(data/"state_case_timeseries.csv")
+    )
+
+    india_timeseries    = get_time_series(case_reports, None)
+    state_timeseries    = get_time_series(case_reports, "detected_state")
+    district_timeseries = get_time_series(case_reports, ["detected_state", "detected_district"])
+
+    india_timeseries.to_csv(data/"india_case_timeseries.csv")
+    state_timeseries.to_csv(data/"state_case_timeseries.csv")
+    district_timeseries.to_csv(data/"district_case_timeseries.csv")
         
 
     print("Uploading time series to storage bucket.")
     storage.Client()\
         .bucket(bucket_name)\
+        .blob("pipeline/raw/india_case_timeseries.csv")\
+        .upload_from_filename(
+            str(data/"india_case_timeseries.csv"), 
+            content_type = "text/csv")
+    storage.Client()\
+        .bucket(bucket_name)\
         .blob("pipeline/raw/state_case_timeseries.csv")\
         .upload_from_filename(
             str(data/"state_case_timeseries.csv"), 
+            content_type = "text/csv")
+    storage.Client()\
+        .bucket(bucket_name)\
+        .blob("pipeline/raw/district_case_timeseries.csv")\
+        .upload_from_filename(
+            str(data/"district_case_timeseries.csv"), 
             content_type = "text/csv")
 
     return 'OK!'
