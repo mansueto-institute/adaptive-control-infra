@@ -98,7 +98,7 @@ def run_estimates(request):
             district_Rt[district] = np.nan
 
     pd.concat(estimates).to_csv("/tmp/district_Rt.csv")
-    top10 = [(k, f"{v:.2f}") for (k, v) in sorted(district_Rt.items(), key = lambda t:t[1], reverse = True)[:10]]
+    top10 = {k: f"{v:.2f}" for (k, v) in sorted(district_Rt.items(), key = lambda t:t[1], reverse = True)[:10]}
     pd.DataFrame.from_dict(top10, orient = "index", columns = ["Rt"]).to_csv("/tmp/top10.csv")
     
     # upload to cloud
