@@ -31,7 +31,6 @@ def obtain_twitter_API():
     auth = tweepy.OAuthHandler(credentials["COVID_IWG_twitter_API_key"], credentials["COVID_IWG_twitter_secret_key"])
     auth.set_access_token(credentials["Twitter_API_access_token"], credentials["Twitter_API_access_secret"])
     api = tweepy.API(auth, wait_on_rate_limit=True, wait_on_rate_limit_notify=True)
-    print(credentials)
     try:
         api.verify_credentials()
         print("Connected to Twitter API!")
