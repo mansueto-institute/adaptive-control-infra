@@ -1,13 +1,11 @@
-from warnings import simplefilter
+import traceback
 
 import numpy as np
 import pandas as pd
 from epimargin.estimators import analytical_MPVS
+from epimargin.etl.covid19india import state_code_lookup
 from epimargin.smoothing import notched_smoothing
 from google.cloud import storage
-from epimargin.etl.covid19india import state_code_lookup
-
-simplefilter("ignore")
 
 # model details 
 gamma     = 0.1 # 10 day infectious period
@@ -96,6 +94,7 @@ def run_estimates(request):
             }))
         except Exception as e:
             print(f"ERROR when estimating Rt for {district}, {state_code}", e)
+            print(traceback.print_exc())
             district_Rt[district] = np.nan
 
     pd.concat(estimates).to_csv("/tmp/district_Rt.csv")
