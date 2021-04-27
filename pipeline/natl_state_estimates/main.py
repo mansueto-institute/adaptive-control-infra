@@ -1,60 +1,37 @@
-import sys
-from pathlib import Path
-from typing import Dict, Optional, Sequence
 from warnings import simplefilter
 
-from google.cloud import storage
-import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-from statsmodels.regression.linear_model import OLS
-from statsmodels.tools import add_constant
-
-from epimargin.estimators import gamma_prior
-from epimargin.etl.covid19india import (download_data, get_time_series,
-                                       load_statewise_data, state_name_lookup)
-from epimargin.plots import plot_RR_est
+from epimargin.estimators import analytical_MPVS
 from epimargin.smoothing import notched_smoothing
-from epimargin.utils import cwd, days
+from google.cloud import storage
 
 simplefilter("ignore")
 
 # model details 
-gamma     = 0.2
-smoothing = 21
+gamma     = 0.1 # 10 day infectious period
+smoothing = 7
 CI        = 0.95
+lookback  = 120 # how many days back to start estimation
+cutoff    = 2   # most recent data to use 
+
 
 # cloud details 
-bucket_name = "adaptive-control-daily-pipeline"
+bucket_name = "daily_pipeline"
 
-def project(dates, R_values, smoothing, period = 7*days):
-    julian_dates = [_.to_julian_date() for _ in dates[-smoothing//2:None]]
-    return OLS(
-        R_values[-smoothing//2:None], 
-        add_constant(julian_dates)
-    )\
-    .fit()\
-    .predict([1, julian_dates[-1] + period])[0]
 
 def run_estimates(_):
-    root = Path("/tmp")
-    data = root/"data"
+    storage.Client()\
+        .bucket(bucket_name)\
+        .blob("pipeline/raw/india_case_timeseries.csv")\
+        .download_to_filename("/tmp/india_case_timeseries.csv")
 
-    data.mkdir(exist_ok=True)
-    download_data(data, 'state_wise_daily.csv')
-
-    state_df = load_statewise_data(data/"state_wise_daily.csv")
-    country_time_series = get_time_series(state_df)
-
-    estimates  = []
-    timeseries = []
+    india_ts = pd.read_csv("/tmp/india_case_timeseries.csv")
 
     # country level
-    (dates, RR_pred, RR_CI_upper, RR_CI_lower, *_) = gamma_prior(country_time_series["Hospitalized"].iloc[:-1], CI = CI, smoothing = notched_smoothing(window = smoothing)) 
+    (dates, RR_pred, RR_CI_upper, RR_CI_lower, *_) =\
+        analytical_MPVS(india_ts["Hospitalized"].iloc[-(lookback+cutoff):-cutoff], CI = CI, smoothing = notched_smoothing(window = smoothing)) 
 
-    country_code = state_name_lookup["India"]
-    for row in zip(dates, RR_pred, RR_CI_upper, RR_CI_lower):
-        timeseries.append((country_code, *row))
 
     # state level rt estimates
     state_time_series = get_time_series(state_df, 'state')
