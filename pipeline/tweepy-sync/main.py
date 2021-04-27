@@ -41,7 +41,7 @@ def obtain_twitter_API():
 
 
 def tweet_using_API(request):
-    api = fetch_credentials()
+    api = obtain_twitter_API()
     if not api:
         sys.exit(3)
     api.update_status("Lorem ipsum dolor sit amet, consectetur adipiscing elit")
