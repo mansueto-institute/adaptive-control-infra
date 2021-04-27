@@ -11,7 +11,7 @@ simplefilter("ignore")
 
 # model details 
 gamma     = 0.1 # 10 day infectious period
-smoothing = 7
+smoothing = 10
 CI        = 0.95
 lookback  = 120 # how many days back to start estimation
 cutoff    = 2   # most recent data to use 
@@ -49,7 +49,7 @@ def run_estimates(request):
     print(f"Estimating state-level Rt for {state_code}") 
     (
         dates,
-        Rt_pred, RR_CI_upper, RR_CI_lower,
+        Rt_pred, Rt_CI_upper, Rt_CI_lower,
         T_pred, T_CI_upper, T_CI_lower,
         total_cases, new_cases_ts,
         anomalies, anomaly_dates
@@ -61,8 +61,8 @@ def run_estimates(request):
     pd.DataFrame(data = {
         "dates": dates,
         "Rt_pred": Rt_pred,
-        "RR_CI_upper": RR_CI_upper,
-        "RR_CI_lower": RR_CI_lower,
+        "Rt_CI_upper": Rt_CI_upper,
+        "Rt_CI_lower": Rt_CI_lower,
         "T_pred": T_pred,
         "T_CI_upper": T_CI_upper,
         "T_CI_lower": T_CI_lower,
@@ -81,13 +81,13 @@ def run_estimates(request):
                 T_pred, T_CI_upper, T_CI_lower,
                 total_cases, new_cases_ts,
                 anomalies, anomaly_dates
-            ) = analytical_MPVS(district_ts.loc[district].set_index("status_change_date").iloc[-(cutoff*10):-cutoff].Hospitalized, CI = CI, smoothing = notched_smoothing(window = smoothing), totals = False)
+            ) = analytical_MPVS(district_ts.loc[district].set_index("status_change_date").iloc[-lookback:-cutoff].Hospitalized, CI = CI, smoothing = notched_smoothing(window = smoothing), totals = False)
             district_Rt[district] = Rt_pred[-1]
             estimates.append(pd.DataFrame(data = {
                 "dates": dates,
                 "Rt_pred": Rt_pred,
-                "RR_CI_upper": RR_CI_upper,
-                "RR_CI_lower": RR_CI_lower,
+                "Rt_CI_upper": Rt_CI_upper,
+                "Rt_CI_lower": Rt_CI_lower,
                 "T_pred": T_pred,
                 "T_CI_upper": T_CI_upper,
                 "T_CI_lower": T_CI_lower,
