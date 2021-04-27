@@ -105,3 +105,5 @@ def run_estimates(request):
     bucket.blob(f"pipeline/est/{state_code}_state_Rt.csv")      .upload_from_filename("/tmp/state_Rt.csv",    content_type = "text/csv")
     bucket.blob(f"pipeline/est/{state_code}_district_Rt.csv")   .upload_from_filename("/tmp/district_Rt.csv", content_type = "text/csv")
     bucket.blob(f"pipeline/est/{state_code}_top10_district.csv").upload_from_filename("/tmp/top10.csv",       content_type = "text/csv")
+
+    return "OK!"
