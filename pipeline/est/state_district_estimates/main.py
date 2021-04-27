@@ -5,7 +5,7 @@ import pandas as pd
 from epimargin.estimators import analytical_MPVS
 from epimargin.smoothing import notched_smoothing
 from google.cloud import storage
-from epimargin.etil.covid19india import state_code_lookup
+from epimargin.etl.covid19india import state_code_lookup
 
 simplefilter("ignore")
 
