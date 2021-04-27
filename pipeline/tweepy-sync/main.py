@@ -1,4 +1,5 @@
 import sys
+import time
 
 from google.cloud import secretmanager
 import tweepy
@@ -29,9 +30,10 @@ def obtain_twitter_API():
     credentials = fetch_credentials()
     auth = tweepy.OAuthHandler(credentials["COVID_IWG_twitter_API_key"], credentials["COVID_IWG_twitter_secret_key"])
     auth.set_access_token(credentials["Twitter_API_access_token"], credentials["Twitter_API_access_secret"])
-
+    api = tweepy.API(auth, wait_on_rate_limit=True, wait_on_rate_limit_notify=True)
+    print(credentials)
     try:
-        api = tweepy.API(auth, wait_on_rate_limit=True, wait_on_rate_limit_notify=True)
+        api.verify_credentials()
         print("Connected to Twitter API!")
         return api
     except Exception as e:
@@ -44,4 +46,6 @@ def tweet_using_API(request):
     api = obtain_twitter_API()
     if not api:
         sys.exit(3)
-    api.update_status("Lorem ipsum dolor sit amet, consectetur adipiscing elit")
+    status = "Lorem ipsum dolor sit amet, consectetur adipiscing elit at Unix time = {}".format(time.time())
+    api.update_status(status)
+    return "Tweeted {}".format(status)
