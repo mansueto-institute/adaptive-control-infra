@@ -91,7 +91,7 @@ def run_estimates(request):
                 "T_CI_lower": T_CI_lower,
                 "total_cases": total_cases[2:],
                 "new_cases_ts": new_cases_ts,
-            }))
+            }).assign(district = district))
         except Exception as e:
             print(f"ERROR when estimating Rt for {district}, {state_code}", e)
             print(traceback.print_exc())
