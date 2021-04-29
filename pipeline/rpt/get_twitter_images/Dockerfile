@@ -45,4 +45,4 @@ RUN pip3 install Flask gunicorn
 
 # Run the web service on container startup.
 # CMD exec gunicorn --bind :$PORT --workers 1 --threads 8 --timeout 0 main:app
-CMD ["gunicorn", "--bind", "0.0.0.0:$PORT", "--workers", "1" ,"--threads", "8", "--timeout", "0" ,"main:app"]
+CMD ["gunicorn", "--bind", "0.0.0.0:8080", "--workers", "1" ,"--threads", "8", "--timeout", "0" ,"main:app"]
