@@ -13,22 +13,22 @@ RUN apt-get update && apt-get install -y \
   fontconfig
 
 # Install fonts 
-RUN wget https://github.com/RedHatOfficial/Overpass/raw/master/desktop-fonts/overpass/overpass-bold-italic.otf       -O ~/.fonts/overpass-bold-italic.otf
-RUN wget https://github.com/RedHatOfficial/Overpass/raw/master/desktop-fonts/overpass/overpass-bold.otf              -O ~/.fonts/overpass-bold.otf
-RUN wget https://github.com/RedHatOfficial/Overpass/raw/master/desktop-fonts/overpass/overpass-extrabold-italic.otf  -O ~/.fonts/overpass-extrabold-italic.otf
-RUN wget https://github.com/RedHatOfficial/Overpass/raw/master/desktop-fonts/overpass/overpass-extrabold.otf         -O ~/.fonts/overpass-extrabold.otf
-RUN wget https://github.com/RedHatOfficial/Overpass/raw/master/desktop-fonts/overpass/overpass-extralight-italic.otf -O ~/.fonts/overpass-extralight-italic.otf
-RUN wget https://github.com/RedHatOfficial/Overpass/raw/master/desktop-fonts/overpass/overpass-extralight.otf        -O ~/.fonts/overpass-extralight.otf
-RUN wget https://github.com/RedHatOfficial/Overpass/raw/master/desktop-fonts/overpass/overpass-heavy-italic.otf      -O ~/.fonts/overpass-heavy-italic.otf
-RUN wget https://github.com/RedHatOfficial/Overpass/raw/master/desktop-fonts/overpass/overpass-heavy.otf             -O ~/.fonts/overpass-heavy.otf
-RUN wget https://github.com/RedHatOfficial/Overpass/raw/master/desktop-fonts/overpass/overpass-italic.otf            -O ~/.fonts/overpass-italic.otf
-RUN wget https://github.com/RedHatOfficial/Overpass/raw/master/desktop-fonts/overpass/overpass-light-italic.otf      -O ~/.fonts/overpass-light-italic.otf
-RUN wget https://github.com/RedHatOfficial/Overpass/raw/master/desktop-fonts/overpass/overpass-light.otf             -O ~/.fonts/overpass-light.otf
-RUN wget https://github.com/RedHatOfficial/Overpass/raw/master/desktop-fonts/overpass/overpass-regular.otf           -O ~/.fonts/overpass-regular.otf
-RUN wget https://github.com/RedHatOfficial/Overpass/raw/master/desktop-fonts/overpass/overpass-semibold-italic.otf   -O ~/.fonts/overpass-semibold-italic.otf
-RUN wget https://github.com/RedHatOfficial/Overpass/raw/master/desktop-fonts/overpass/overpass-semibold.otf          -O ~/.fonts/overpass-semibold.otf
-RUN wget https://github.com/RedHatOfficial/Overpass/raw/master/desktop-fonts/overpass/overpass-thin-italic.otf       -O ~/.fonts/overpass-thin-italic.otf
-RUN wget https://github.com/RedHatOfficial/Overpass/raw/master/desktop-fonts/overpass/overpass-thin.otf              -O ~/.fonts/overpass-thin.otf
+RUN wget https://github.com/RedHatOfficial/Overpass/raw/master/desktop-fonts/overpass/overpass-bold-italic.otf       -O /usr/local/share/fonts/overpass-bold-italic.otf
+RUN wget https://github.com/RedHatOfficial/Overpass/raw/master/desktop-fonts/overpass/overpass-bold.otf              -O /usr/local/share/fonts/overpass-bold.otf
+RUN wget https://github.com/RedHatOfficial/Overpass/raw/master/desktop-fonts/overpass/overpass-extrabold-italic.otf  -O /usr/local/share/fonts/overpass-extrabold-italic.otf
+RUN wget https://github.com/RedHatOfficial/Overpass/raw/master/desktop-fonts/overpass/overpass-extrabold.otf         -O /usr/local/share/fonts/overpass-extrabold.otf
+RUN wget https://github.com/RedHatOfficial/Overpass/raw/master/desktop-fonts/overpass/overpass-extralight-italic.otf -O /usr/local/share/fonts/overpass-extralight-italic.otf
+RUN wget https://github.com/RedHatOfficial/Overpass/raw/master/desktop-fonts/overpass/overpass-extralight.otf        -O /usr/local/share/fonts/overpass-extralight.otf
+RUN wget https://github.com/RedHatOfficial/Overpass/raw/master/desktop-fonts/overpass/overpass-heavy-italic.otf      -O /usr/local/share/fonts/overpass-heavy-italic.otf
+RUN wget https://github.com/RedHatOfficial/Overpass/raw/master/desktop-fonts/overpass/overpass-heavy.otf             -O /usr/local/share/fonts/overpass-heavy.otf
+RUN wget https://github.com/RedHatOfficial/Overpass/raw/master/desktop-fonts/overpass/overpass-italic.otf            -O /usr/local/share/fonts/overpass-italic.otf
+RUN wget https://github.com/RedHatOfficial/Overpass/raw/master/desktop-fonts/overpass/overpass-light-italic.otf      -O /usr/local/share/fonts/overpass-light-italic.otf
+RUN wget https://github.com/RedHatOfficial/Overpass/raw/master/desktop-fonts/overpass/overpass-light.otf             -O /usr/local/share/fonts/overpass-light.otf
+RUN wget https://github.com/RedHatOfficial/Overpass/raw/master/desktop-fonts/overpass/overpass-regular.otf           -O /usr/local/share/fonts/overpass-regular.otf
+RUN wget https://github.com/RedHatOfficial/Overpass/raw/master/desktop-fonts/overpass/overpass-semibold-italic.otf   -O /usr/local/share/fonts/overpass-semibold-italic.otf
+RUN wget https://github.com/RedHatOfficial/Overpass/raw/master/desktop-fonts/overpass/overpass-semibold.otf          -O /usr/local/share/fonts/overpass-semibold.otf
+RUN wget https://github.com/RedHatOfficial/Overpass/raw/master/desktop-fonts/overpass/overpass-thin-italic.otf       -O /usr/local/share/fonts/overpass-thin-italic.otf
+RUN wget https://github.com/RedHatOfficial/Overpass/raw/master/desktop-fonts/overpass/overpass-thin.otf              -O /usr/local/share/fonts/overpass-thin.otf
 RUN fc-cache -v
 RUN fc-match -s overpass
 
