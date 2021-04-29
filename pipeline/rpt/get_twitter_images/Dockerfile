@@ -10,13 +10,6 @@ RUN apt-get update && apt-get install -y \
   gdal-bin    \
   python-gdal
 
-# # Create a virtualenv for dependencies. This isolates these packages from system-level packages.
-# RUN virtualenv /env -p python3.8
-
-# # Activate virtualenv
-# ENV VIRTUAL_ENV /env
-# ENV PATH /env/bin:$PATH
-
 # Copy the application's requirements.txt and install all dependencies into the virtualenv.
 ADD pipeline/rpt/get_twitter_images/requirements.txt /app/requirements.txt
 RUN pip install -r /app/requirements.txt

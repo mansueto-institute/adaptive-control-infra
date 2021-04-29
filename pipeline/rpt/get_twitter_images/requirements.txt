@@ -1,5 +1,4 @@
 git+https://github.com/COVID-IWG/epimargin@master#egg=epimargin
-adaptive==0.2.dev0
 appnope==0.1.0
 arviz==0.9.0
 astroid==2.4.1
