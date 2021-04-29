@@ -17,12 +17,12 @@ RUN apt-get update && apt-get install -y \
 # ENV PATH /env/bin:$PATH
 
 # Copy the application's requirements.txt and install all dependencies into the virtualenv.
-ADD requirements.txt /app/requirements.txt
+ADD pipeline/rpt/get_twitter_images/requirements.txt /app/requirements.txt
 RUN pip install -r /app/requirements.txt
 # Add the application source code.
 ENV APP_HOME /app
 WORKDIR $APP_HOME
-ADD . /app
+ADD pipeline/rpt/get_twitter_images /app
 
 # Install production dependencies.
 RUN pip install Flask gunicorn
