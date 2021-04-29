@@ -7,8 +7,7 @@ ENV PYTHONUNBUFFERED True
 RUN apt-get update && apt-get install -y \
   binutils    \
   git         \
-  gdal-bin    \
-  python-gdal
+  gdal-bin
 
 # Copy the application's requirements.txt and install all dependencies into the virtualenv.
 ADD pipeline/rpt/get_twitter_images/requirements.txt /app/requirements.txt
