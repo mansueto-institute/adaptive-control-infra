@@ -12,14 +12,14 @@ RUN apt-get update && apt-get install -y \
 
 # Copy the application's requirements.txt and install all dependencies into the virtualenv.
 ADD pipeline/rpt/get_twitter_images/requirements.txt /app/requirements.txt
-RUN pip install -r /app/requirements.txt
+RUN pip3 install -r /app/requirements.txt
 # Add the application source code.
 ENV APP_HOME /app
 WORKDIR $APP_HOME
 ADD pipeline/rpt/get_twitter_images /app
 
 # Install production dependencies.
-RUN pip install Flask gunicorn
+RUN pip3 install Flask gunicorn
 
 # Run the web service on container startup.
 CMD exec gunicorn --bind :$PORT --workers 1 --threads 8 --timeout 0 main:app
