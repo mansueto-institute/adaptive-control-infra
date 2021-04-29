@@ -69,7 +69,6 @@ def run_estimates(request):
     }).to_csv("/tmp/state_Rt.csv")
 
     print(f"Estimating district-level Rt for {state_code}")
-    district_Rt = {}
     estimates = []
     for district in filter(lambda _: _ not in excluded, district_ts.index.get_level_values(0).unique()):
         try:
@@ -80,7 +79,6 @@ def run_estimates(request):
                 total_cases, new_cases_ts,
                 anomalies, anomaly_dates
             ) = analytical_MPVS(district_ts.loc[district].set_index("status_change_date").iloc[-lookback:-cutoff].Hospitalized, CI = CI, smoothing = notched_smoothing(window = smoothing), totals = False)
-            district_Rt[district] = Rt_pred[-1]
             estimates.append(pd.DataFrame(data = {
                 "dates": dates,
                 "Rt_pred": Rt_pred,
@@ -95,15 +93,10 @@ def run_estimates(request):
         except Exception as e:
             print(f"ERROR when estimating Rt for {district}, {state_code}", e)
             print(traceback.print_exc())
-            district_Rt[district] = np.nan
 
     pd.concat(estimates).to_csv("/tmp/district_Rt.csv")
-    top10 = {k: f"{v:.2f}" for (k, v) in sorted(district_Rt.items(), key = lambda t:t[1], reverse = True)[:10]}
-    pd.DataFrame.from_dict(top10, orient = "index", columns = ["Rt"]).to_csv("/tmp/top10.csv")
     
     # upload to cloud
     bucket.blob(f"pipeline/est/{state_code}_state_Rt.csv")      .upload_from_filename("/tmp/state_Rt.csv",    content_type = "text/csv")
     bucket.blob(f"pipeline/est/{state_code}_district_Rt.csv")   .upload_from_filename("/tmp/district_Rt.csv", content_type = "text/csv")
-    bucket.blob(f"pipeline/est/{state_code}_top10_district.csv").upload_from_filename("/tmp/top10.csv",       content_type = "text/csv")
-
     return "OK!"
