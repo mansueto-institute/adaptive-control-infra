@@ -5,8 +5,9 @@ ENV PYTHONUNBUFFERED True
 
 # Get GDAL dependencies (https://stackoverflow.com/a/46880451)
 RUN apt-get update && apt-get install -y \
-  binutils \
-  gdal-bin \
+  binutils    \
+  git         \
+  gdal-bin    \
   python-gdal
 
 # # Create a virtualenv for dependencies. This isolates these packages from system-level packages.
