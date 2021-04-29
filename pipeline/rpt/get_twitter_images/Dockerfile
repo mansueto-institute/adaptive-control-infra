@@ -1,4 +1,4 @@
-FROM osgeo/gdal:alpine-ultrasmall-latest
+FROM osgeo/gdal
 
 # Allow statements and log messages to immediately appear in the Knative logs
 ENV PYTHONUNBUFFERED True
