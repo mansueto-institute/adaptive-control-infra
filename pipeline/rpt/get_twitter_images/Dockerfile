@@ -37,12 +37,12 @@ RUN fc-cache -v
 RUN fc-match -s overpass
 
 # Copy the application's requirements.txt and install all dependencies into the virtualenv.
-ADD pipeline/rpt/get_twitter_images/requirements.txt /app/requirements.txt
+ADD ./requirements.txt /app/requirements.txt
 RUN pip3 install -r /app/requirements.txt
 # Add the application source code.
 ENV APP_HOME /app
 WORKDIR $APP_HOME
-ADD pipeline/rpt/get_twitter_images /app
+ADD . /app
 
 # Install production dependencies.
 RUN pip3 install Flask gunicorn
