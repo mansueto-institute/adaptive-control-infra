@@ -71,7 +71,9 @@ def generate_report(state_code: str):
     table.scale(1, 2)
     for (row, col), cell in table.get_celld().items():
         if (row == 0):
-            cell.set_text_props(fontfamily = plt.theme.label["family"], fontsize = plt.theme.label["size"])
+            cell.set_text_props(fontfamily = plt.theme.label["family"], fontsize = plt.theme.label["size"], fontweight = "semibold")
+        else:
+            cell.set_text_props(fontfamily = plt.theme.label["family"], fontsize = plt.theme.label["size"], fontweight = "light")
     plt.PlotDevice().title(f"{state}: top districts by $R_t$", ha = "center", x = 0.5)
     plt.savefig(f"/tmp/{state_code}_Rt_top10.png", dpi = 600)
     plt.clf()
