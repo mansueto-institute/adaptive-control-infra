@@ -52,7 +52,7 @@ def generate_report(state_code: str):
     print(f"Generated timeseries plot for {state_code}.")
 
     gdf = gpd.read_file("/tmp/state.json")
-    gdf["Rt"] = gdf.district.map(district_Rt)
+    gdf["Rt"] = gdf.district.map(latest_Rt)
     fig, ax = plt.subplots()
     fig.set_size_inches(3840/300, 1986/300)
     plt.choropleth(gdf, title = None, mappable = plt.get_cmap(0.75, 2.5), fig = fig, ax = ax)\
