@@ -12,11 +12,17 @@ app = Flask(__name__)
 CI        = 0.95
 smoothing = 10
 
+print("Container starting.")
 plt.rebuild_font_cache()
 plt.set_theme("twitter")
 
 bucket_name = "daily_pipeline"
 bucket = storage.Client().bucket(bucket_name)
+
+@app.route("/")
+def hello_world():
+    name = os.environ.get("NAME", "World")
+    return "Hello {}!".format(name)
 
 @app.route("/state/<state_code>")
 def generate_report(state_code: str):
