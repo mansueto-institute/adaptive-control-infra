@@ -86,7 +86,7 @@ def tweet_report(request):
     bucket.blob(f"pipeline/rpt/{state_code}_Rt_top10.png")     .download_to_filename(f"/tmp/{state_code}_Rt_top10.png")
     
     twitter = get_twitter_client()
-    media_ids = [twitter.media_upload(_) for _ in (f"/tmp/{state_code}_Rt_timeseries.png", f"/tmp/{state_code}_Rt_choropleth.png", f"/tmp/{state_code}_Rt_top10.png")]
+    media_ids = [twitter.media_upload(_).media_id for _ in (f"/tmp/{state_code}_Rt_timeseries.png", f"/tmp/{state_code}_Rt_choropleth.png", f"/tmp/{state_code}_Rt_top10.png")]
     today = date.today().strftime("%d %b %Y")
     twitter.update_status(
         status    = f"Rt report for {state}, {today}", 
