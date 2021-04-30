@@ -1,0 +1,4 @@
+git+https://github.com/COVID-IWG/epimargin@master#egg=epimargin
+google-cloud-secret-manager==2.0.0
+google-cloud-storage==1.7.0
+tweepy

@@ -15,7 +15,6 @@ lookback  = 120 # how many days back to start estimation
 cutoff    = 2   # most recent data to use 
 excluded = ["Unknown", "Other State", "Airport Quarantine", "Railway Quarantine"]
 
-
 # cloud details 
 bucket_name = "daily_pipeline"
 
