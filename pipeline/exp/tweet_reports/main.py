@@ -35,7 +35,7 @@ def get_twitter_client():
     api.verify_credentials()
     return api
 
-def tweet_using_API(request):
+def tweet_report(request):
     state_code = get(request, "state_code")
     state = state_code_lookup[state_code]
     print(f"Tweeting report for {state_code} ({state}).")
