@@ -1,7 +1,6 @@
 from datetime import date
 
 import tweepy
-from epimargin.etl.covid19india import state_code_lookup
 from google.cloud import secretmanager, storage
 
 # cloud details
@@ -10,6 +9,48 @@ bucket_name = "daily_pipeline"
 bucket = storage.Client().bucket(bucket_name)
 secrets = secretmanager.SecretManagerServiceClient()
 
+state_code_lookup = {
+    'AN'  : 'Andaman & Nicobar Islands',
+    'AP'  : 'Andhra Pradesh',
+    'AR'  : 'Arunachal Pradesh',
+    'AS'  : 'Assam',
+    'BR'  : 'Bihar',
+    'CH'  : 'Chandigarh',
+    'CT'  : 'Chhattisgarh',
+    'DD'  : 'Daman & Diu', 
+    'DDDN': 'Dadra & Nagar Haveli and Daman & Diu',
+    'DL'  : 'Delhi',
+    'DN'  : 'Dadra & Nagar Haveli',
+    'GA'  : 'Goa',
+    'GJ'  : 'Gujarat',
+    'HP'  : 'Himachal Pradesh',
+    'HR'  : 'Haryana',
+    'JH'  : 'Jharkhand',
+    'JK'  : 'Jammu & Kashmir',
+    'KA'  : 'Karnataka',
+    'KL'  : 'Kerala',
+    'LA'  : 'Ladakh',
+    'LD'  : 'Lakshadweep',
+    'MH'  : 'Maharashtra',
+    'ML'  : 'Meghalaya',
+    'MN'  : 'Manipur',
+    'MP'  : 'Madhya Pradesh',
+    'MZ'  : 'Mizoram',
+    'NL'  : 'Nagaland',
+    'OR'  : 'Odisha',
+    'PB'  : 'Punjab',
+    'PY'  : 'Puducherry',
+    'RJ'  : 'Rajasthan',
+    'SK'  : 'Sikkim',
+    'TG'  : 'Telangana',
+    'TN'  : 'Tamil Nadu',
+    'TR'  : 'Tripura',
+    'TT'  : 'India',
+    'UN'  : 'State Unassigned',
+    'UP'  : 'Uttar Pradesh',
+    'UT'  : 'Uttarakhand',
+    'WB'  : 'West Bengal',
+}
 #  secret names
 secret_names = ["COVID_IWG_twitter_API_key", "COVID_IWG_twitter_secret_key", "Twitter_API_access_token", "Twitter_API_access_secret"]
 

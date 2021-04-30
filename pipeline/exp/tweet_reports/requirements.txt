@@ -1,4 +1,3 @@
-git+https://github.com/COVID-IWG/epimargin@master#egg=epimargin
 google-cloud-secret-manager
 google-cloud-storage
 tweepy
