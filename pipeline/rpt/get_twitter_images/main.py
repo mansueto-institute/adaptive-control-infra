@@ -12,20 +12,20 @@ app = Flask(__name__)
 CI        = 0.95
 smoothing = 10
 
+plt.rebuild_font_cache()
 plt.set_theme("twitter")
 
 bucket_name = "daily_pipeline"
 bucket = storage.Client().bucket(bucket_name)
-
 
 @app.route("/state/<state_code>")
 def generate_report(state_code: str):
     print(f"Received request for {state_code}.")
     state = state_code_lookup[state_code]
     blobs = { 
-        f"pipeline/est/{state_code}_state_Rt.csv"      : "/tmp/state_Rt.csv",
-        f"pipeline/est/{state_code}_district_Rt.csv"   : "/tmp/district_Rt.csv",
-        f"pipeline/commons/maps/{state_code}.json"     : "/tmp/state.json"
+        f"pipeline/est/{state_code}_state_Rt.csv"   : "/tmp/state_Rt.csv",
+        f"pipeline/est/{state_code}_district_Rt.csv": "/tmp/district_Rt.csv",
+        f"pipeline/commons/maps/{state_code}.json"  : "/tmp/state.json"
     }
     for (blob_name, filename) in blobs.items():
         bucket.blob(blob_name).download_to_filename(filename)
