@@ -1,6 +1,5 @@
 import traceback
 
-import numpy as np
 import pandas as pd
 from epimargin.estimators import analytical_MPVS
 from epimargin.etl.covid19india import state_code_lookup
@@ -28,6 +27,7 @@ def get(request, key):
         return None
 
 def run_estimates(request):
+    print("Request:", request, request.args)
     state_code = get(request, 'state_code')
     state = state_code_lookup[state_code]
 
