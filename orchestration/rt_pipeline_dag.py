@@ -10,7 +10,39 @@ from airflow.operators.http_operator import SimpleHttpOperator
 AUDIENCE_ROOT = os.environ["GCF_URL"]
 METADATA_ROOT = os.environ["METADATA"]
 
-states = ["MH", "PB", "TN", "KA", "WB"]
+states = [
+    'AP',
+    'AR',
+    'AS',
+    'BR',
+    'CT',
+    'GA',
+    'GJ',
+    'HP',
+    'HR',
+    'JH',
+    'KA',
+    'KL',
+    'LA',
+    'LD',
+    'MH',
+    'ML',
+    'MN',
+    'MP',
+    'MZ',
+    'NL',
+    'OR',
+    'PB',
+    'PY',
+    'RJ',
+    'SK',
+    'TG',
+    'TN',
+    'TR',
+    'UP',
+    'UT',
+    'WB',
+]
 
 class CloudFunction(SimpleHttpOperator):
     # see 
@@ -61,7 +93,7 @@ def tweet_Rt_report(state):
         data         = json.dumps({"state_code": state})
     )
 
-with models.DAG("Rt_pipeline", schedule_interval = datetime.timedelta(days = 1), catchup = False) as dag:
+with models.DAG("Rt_pipeline", schedule_interval = "0 8 * * *", catchup = False) as dag:
     get_timeseries = CloudFunction(
         task_id      = "get_timeseries",
         method       = "POST",

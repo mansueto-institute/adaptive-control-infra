@@ -42,7 +42,7 @@ def generate_report(state_code: str):
     latest_Rt = district_Rt[district_Rt.dates == district_Rt.dates.max()].set_index("district")["Rt_pred"].to_dict()
     top10 = [(k, "> 3.0" if v > 3 else f"{v:.2f}") for (k, v) in sorted(latest_Rt.items(), key = lambda t:t[1], reverse = True)[:10]]
 
-    plt.Rt(list(state_Rt.dates), state_Rt.Rt_pred, state_Rt.Rt_CI_lower, state_Rt.Rt_CI_upper, CI)\
+    plt.Rt([date.to_pydatetime() for date in state_Rt.dates], state_Rt.Rt_pred, state_Rt.Rt_CI_lower, state_Rt.Rt_CI_upper, CI)\
         .axis_labels("date", "$R_t$")\
         .title(f"{state}: $R_t$ over time", ha = "center", x = 0.5)\
         .adjust(left = 0.11, bottom = 0.16)
