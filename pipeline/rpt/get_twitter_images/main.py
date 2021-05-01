@@ -1,4 +1,5 @@
 import os
+import time 
 
 import epimargin.plots as plt
 import geopandas as gpd
@@ -49,7 +50,7 @@ def generate_report(state_code: str):
         .adjust(left = 0.11, bottom = 0.16)
     plt.gcf().set_size_inches(3840/300, 1986/300)
     plt.savefig(f"/tmp/{state_code}_Rt_timeseries.png")
-    plt.clf()
+    plt.close()
     print(f"Generated timeseries plot for {state_code}.")
 
     gdf = gpd.read_file("/tmp/state.geojson")
@@ -62,7 +63,7 @@ def generate_report(state_code: str):
     plt.PlotDevice(fig).title(f"{state}: $R_t$ by district", ha = "center", x = 0.5)
     plt.axis('off')
     plt.savefig(f"/tmp/{state_code}_Rt_choropleth.png", dpi = 300)
-    plt.clf() 
+    plt.close() 
     print(f"Generated choropleth for {state_code}.")
 
     fig, ax = plt.subplots(1,1)
@@ -77,8 +78,11 @@ def generate_report(state_code: str):
             cell.set_text_props(fontfamily = plt.theme.label["family"], fontsize = plt.theme.label["size"], fontweight = "light")
     plt.PlotDevice().title(f"{state}: top districts by $R_t$", ha = "center", x = 0.5)
     plt.savefig(f"/tmp/{state_code}_Rt_top10.png", dpi = 600)
-    plt.clf()
+    plt.close()
     print(f"Generated top 10 district listing for {state_code}.")
+
+    # sleep for 5 seconds to ensure the images finish saving
+    time.sleep(5)
 
     bucket.blob(f"pipeline/rpt/{state_code}_Rt_timeseries.png").upload_from_filename(f"/tmp/{state_code}_Rt_timeseries.png", content_type = "image/png")
     bucket.blob(f"pipeline/rpt/{state_code}_Rt_choropleth.png").upload_from_filename(f"/tmp/{state_code}_Rt_choropleth.png", content_type = "image/png")
