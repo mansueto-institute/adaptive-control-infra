@@ -44,7 +44,7 @@ def generate_report(state_code: str):
 
     plt.Rt(list(state_Rt.dates), state_Rt.Rt_pred, state_Rt.Rt_CI_lower, state_Rt.Rt_CI_upper, CI)\
         .axis_labels("date", "$R_t$")\
-        .title("Maharashtra: $R_t$ over time", ha = "center", x = 0.5)\
+        .title(f"{state}: $R_t$ over time", ha = "center", x = 0.5)\
         .adjust(left = 0.11, bottom = 0.16)
     plt.gcf().set_size_inches(3840/300, 1986/300)
     plt.savefig(f"/tmp/{state_code}_Rt_timeseries.png")

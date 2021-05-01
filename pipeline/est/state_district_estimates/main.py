@@ -27,7 +27,6 @@ def get(request, key):
         return None
 
 def run_estimates(request):
-    print("Request:", request, request.args)
     state_code = get(request, 'state_code')
     state = state_code_lookup[state_code]
 
