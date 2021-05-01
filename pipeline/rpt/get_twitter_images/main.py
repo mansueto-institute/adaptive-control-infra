@@ -31,7 +31,7 @@ def generate_report(state_code: str):
     blobs = { 
         f"pipeline/est/{state_code}_state_Rt.csv"   : "/tmp/state_Rt.csv",
         f"pipeline/est/{state_code}_district_Rt.csv": "/tmp/district_Rt.csv",
-        f"pipeline/commons/maps/{state_code}.json"  : "/tmp/state.json"
+        f"pipeline/commons/maps/{state_code}.json"  : "/tmp/state.geojson"
     }
     for (blob_name, filename) in blobs.items():
         bucket.blob(blob_name).download_to_filename(filename)
@@ -51,7 +51,7 @@ def generate_report(state_code: str):
     plt.clf()
     print(f"Generated timeseries plot for {state_code}.")
 
-    gdf = gpd.read_file("/tmp/state.json")
+    gdf = gpd.read_file("/tmp/state.geojson")
     gdf["Rt"] = gdf.district.map(latest_Rt)
     fig, ax = plt.subplots()
     fig.set_size_inches(3840/300, 1986/300)
