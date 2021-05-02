@@ -91,7 +91,8 @@ def tweet_Rt_report(state):
         endpoint     = "STEP_3_EXP-tweet-Rt-report",
         start_date   = datetime.datetime(2021, 4, 29),
         http_conn_id = "cloud_functions",
-        data         = json.dumps({"state_code": state})
+        data         = json.dumps({"state_code": state}),
+        retries      = 3
     )
 
 with models.DAG("Rt_pipeline", schedule_interval = "0 8 * * *", catchup = False) as dag:

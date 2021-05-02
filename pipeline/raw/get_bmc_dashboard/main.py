@@ -11,7 +11,7 @@ def run_download(_):
     filename = f"bmc_dashboard_{date}.pdf"
     print(f"Downloading BMC dashboard for date {date}.")
 
-    response = requests.get(URL)
+    response = requests.get(URL, verify = False)
     with open(f"/tmp/{filename}", "wb") as dst:
         dst.write(response.content)
     
