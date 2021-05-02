@@ -82,8 +82,8 @@ def generate_report(state_code: str):
     plt.close()
     print(f"Generated top 10 district listing for {state_code}.")
 
-    # sleep for 5 seconds to ensure the images finish saving
-    time.sleep(5)
+    # sleep for 10 seconds to ensure the images finish saving
+    time.sleep(10)
 
     bucket.blob(f"pipeline/rpt/{state_code}_Rt_timeseries.png").upload_from_filename(f"/tmp/{state_code}_Rt_timeseries.png", content_type = "image/png")
     bucket.blob(f"pipeline/rpt/{state_code}_Rt_choropleth.png").upload_from_filename(f"/tmp/{state_code}_Rt_choropleth.png", content_type = "image/png")
