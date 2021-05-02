@@ -33,7 +33,6 @@ states = [
     'NL',
     'OR',
     'PB',
-    'PY',
     'RJ',
     'SK',
     'TG',

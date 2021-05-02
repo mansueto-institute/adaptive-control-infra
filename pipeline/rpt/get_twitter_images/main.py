@@ -44,6 +44,7 @@ def generate_report(state_code: str):
     top10 = [(k, "> 3.0" if v > 3 else f"{v:.2f}") for (k, v) in sorted(latest_Rt.items(), key = lambda t:t[1], reverse = True)[:10]]
 
     dates = [pd.Timestamp(date).to_pydatetime() for date in state_Rt.dates]
+    plt.close("all")
     plt.Rt(dates, state_Rt.Rt_pred, state_Rt.Rt_CI_lower, state_Rt.Rt_CI_upper, CI)\
         .axis_labels("date", "$R_t$")\
         .title(f"{state}: $R_t$ over time", ha = "center", x = 0.5)\
