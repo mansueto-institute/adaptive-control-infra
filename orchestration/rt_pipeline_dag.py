@@ -80,7 +80,8 @@ def create_Rt_report(state):
         method       = "GET",
         endpoint     = f"state/{state}",
         start_date   = datetime.datetime(2021, 4, 29),
-        http_conn_id = "cloud_run_create_report"
+        http_conn_id = "cloud_run_create_report",
+        retries      = 3
     )
 
 def tweet_Rt_report(state):
