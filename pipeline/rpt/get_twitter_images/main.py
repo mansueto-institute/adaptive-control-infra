@@ -82,8 +82,23 @@ def generate_report(state_code: str):
     plt.close()
     print(f"Generated top 10 district listing for {state_code}.")
 
-    # sleep for 10 seconds to ensure the images finish saving
-    time.sleep(10)
+    # sleep for 15 seconds to ensure the images finish saving
+    time.sleep(15)
+
+    # check output is at least 50 KB
+    timeseries_size_kb = os.stat(f"/tmp/{state_code}_Rt_timeseries.png").st_size / 1000
+    top10_size_kb      = os.stat(f"/tmp/{state_code}_Rt_top10.png")     .st_size / 1000
+    print(f"Timeseries artifact size: {timeseries_size_kb} kb")
+    print(f"Top 10 listing artifact size: {top10_size_kb} kb")
+    assert timeseries_size_kb > 50
+    assert top10_size_kb      > 50
+    # for non-island states, check output is at least 100KB
+    if state_code not in ["LD", "PY"]:
+        choropleth_size_kb = os.stat(f"/tmp/{state_code}_Rt_choropleth.png").st_size / 1000
+        print(f"Choropleth artifact size: {choropleth_size_kb} kb")
+        assert choropleth_size_kb > 100
+    else:
+        print(f"Skipping choropleth artifact size check for {state_code}")
 
     bucket.blob(f"pipeline/rpt/{state_code}_Rt_timeseries.png").upload_from_filename(f"/tmp/{state_code}_Rt_timeseries.png", content_type = "image/png")
     bucket.blob(f"pipeline/rpt/{state_code}_Rt_choropleth.png").upload_from_filename(f"/tmp/{state_code}_Rt_choropleth.png", content_type = "image/png")

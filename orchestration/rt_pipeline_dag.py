@@ -94,7 +94,7 @@ def tweet_Rt_report(state):
         retries      = 3
     )
 
-with models.DAG("Rt_pipeline", schedule_interval = "0 8 * * *", catchup = False) as dag:
+with models.DAG("Rt_pipeline", schedule_interval = "45 13 * * *", catchup = False) as dag:
     get_timeseries = CloudFunction(
         task_id      = "get_timeseries",
         method       = "POST",
