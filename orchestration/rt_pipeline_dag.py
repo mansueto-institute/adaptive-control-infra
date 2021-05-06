@@ -94,6 +94,18 @@ def tweet_Rt_report(state):
         retries      = 3
     )
 
+def forward_simulation(state):
+    return CloudFunction(
+        task_id      = f"tweet_report_{state}",
+        method       = "POST",
+        endpoint     = "STEP_3_EXP-tweet-Rt-report",
+        start_date   = datetime.datetime(2021, 4, 29),
+        http_conn_id = "cloud_functions",
+        data         = json.dumps({"state_code": state}),
+        retries      = 3
+    )
+
+
 with models.DAG("Rt_pipeline", schedule_interval = "45 8 * * *", catchup = False) as dag:
     get_timeseries = CloudFunction(
         task_id      = "get_timeseries",
@@ -103,8 +115,29 @@ with models.DAG("Rt_pipeline", schedule_interval = "45 8 * * *", catchup = False
         http_conn_id = "cloud_functions"
     )
 
+    get_vax_data = CloudFunction(
+        task_id      = "get_vax_data",
+        method       = "POST",
+        endpoint     = "STEP_0_RAW-get-vax-data",
+        start_date   = datetime.datetime(2021, 4, 29),
+        http_conn_id = "cloud_functions"
+    )
+
+    simulation_initial_conditions = CloudFunction(
+        task_id      = "simulation_initial_conditions",
+        method       = "POST",
+        endpoint     = "STEP_1_EST-simulation-initial-conditions",
+        start_date   = datetime.datetime(2021, 4, 29),
+        http_conn_id = "cloud_functions"
+    )
+
     for state in states:
+        epi_step_for_state = epi_step(state)
         get_timeseries          >>\
-        epi_step(state)         >>\
+        epi_step_for_state      >>\
         create_Rt_report(state) >>\
-        tweet_Rt_report (state)
+        tweet_Rt_report(state)
+
+        [get_vax_data, epi_step_for_state] >>\
+        simulation_initial_conditions      >>\
+        forward_simulation(state)
