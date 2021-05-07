@@ -164,7 +164,7 @@ def assemble_data(request):
         dT0 = dT_conf_smooth[simulation_start if simulation_start in dT_conf_smooth.index else -1] * T_ratio
         I0 = max(0, (T0 - R0 - D0))
 
-        V0 = vax[state][simulation_start if simulation_start in vax.index else -1] * N_tot / districts_to_run.loc[state].N_tot.sum()
+        V0 = vax[state][simulation_start if simulation_start in vax.index else -1] * N_tot / districts_to_run.N_tot.sum()
         print("Resolved vaccination data.")
 
         rows.append((state_code, state, district, 
