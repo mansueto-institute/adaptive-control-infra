@@ -14,7 +14,7 @@ cutoff    = 2   # most recent data to use
 excluded = ["Unknown", "Other State", "Airport Quarantine", "Railway Quarantine"]
 coalesce_states = ["Delhi", "Manipur", "Dadra And Nagar Haveli And Daman And Diu", "Andaman And Nicobar Islands"]
 survey_date = "October 23, 2020"
-columns  = ["state_code", "state", "district", "sero_0", "N_0", "sero_1", "N_1", "sero_2", "N_2", "sero_3", "N_3", "sero_4", "N_4", "sero_5", "N_5", "sero_6", "N_6", "N_tot", "Rt", "Rt_upper", "Rt_lower", "S0", "I0", "R0", "D0", "dT0", "dD0", "V0"]
+columns  = ["state_code", "state", "district", "sero_0", "N_0", "sero_1", "N_1", "sero_2", "N_2", "sero_3", "N_3", "sero_4", "N_4", "sero_5", "N_5", "sero_6", "N_6", "N_tot", "Rt", "Rt_upper", "Rt_lower", "S0", "I0", "R0", "D0", "dT0", "dD0", "V0", "pandemic_start"]
 # cloud details 
 bucket_name = "daily_pipeline"
 
@@ -58,8 +58,8 @@ def assemble_data(request):
 
     district_age_pop = pd.read_csv(data / "all_india_sero_pop.csv").set_index(["state", "district"])
     
-    state_ts    = pd.read_csv(data / "state_case_timeseries.csv")\
-        .set_index(["detected_state"])\
+    state_ts = pd.read_csv(data / "state_case_timeseries.csv")\
+        .set_index(["detected_state", "status_change_date"])\
         .drop(columns = ["date", "time", "delta", "logdelta"])\
         .rename(columns = {
             "Deceased":     "dD",
@@ -67,7 +67,7 @@ def assemble_data(request):
             "Recovered":    "dR"
         })
     district_ts = pd.read_csv(data / "district_case_timeseries.csv")\
-        .set_index(["detected_state", "detected_district"]).loc[state]\
+        .set_index(["detected_state", "detected_district", "status_change_date"]).loc[state]\
         .drop(columns = ["date", "time", "delta", "logdelta"])\
         .rename(columns = {
             "Deceased":     "dD",
@@ -75,7 +75,7 @@ def assemble_data(request):
             "Recovered":    "dR"
         })
     
-    state_Rt    = pd.read_csv(data / f"{state_code}_state_Rt.csv",    index_col = 0, parse_dates = ["dates"])\
+    state_Rt = pd.read_csv(data / f"{state_code}_state_Rt.csv",    index_col = 0, parse_dates = ["dates"])\
         [["dates", "Rt_pred"]]\
         .assign(district = state)\
         .drop_duplicates(subset = "district", keep = "last")\
@@ -144,6 +144,7 @@ def assemble_data(request):
         D0 = D_conf_smooth[simulation_start if simulation_start in D_conf_smooth.index else -1]
         
         dT_conf = ts.loc[district].dT
+        pandemic_start = dT_conf.index.min()
         dT_conf = dT_conf.reindex(pd.date_range(dT_conf.index.min(), dT_conf.index.max()), fill_value = 0)
         if len(dT_conf) >= window + 1:
             dT_conf_smooth = pd.Series(smooth(dT_conf), index = dT_conf.index).clip(0).astype(int)
@@ -164,7 +165,7 @@ def assemble_data(request):
 
         rows.append((state_code, state, district, 
             sero_0, N_0, sero_1, N_1, sero_2, N_2, sero_3, N_3, sero_4, N_4, sero_5, N_5, sero_6, N_6, N_tot, 
-            Rt, S0, I0, R0, D0, dT0, dD0, V0
+            Rt, S0, I0, R0, D0, dT0, dD0, V0, pandemic_start
         ))
     
     pd.DataFrame(rows, columns = columns).to_csv(data / f"simulation_initial_conditions_{state_code}.csv")
