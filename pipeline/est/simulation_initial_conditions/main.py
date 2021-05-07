@@ -56,10 +56,24 @@ def assemble_data(request):
     
     print(f"Downloaded simulation input data for {state_code} ({state}).")
 
-    district_age_pop = pd.read_csv(data / "all_india_sero_pop.csv")      .set_index(["state", "district"])
+    district_age_pop = pd.read_csv(data / "all_india_sero_pop.csv").set_index(["state", "district"])
     
-    state_ts    = pd.read_csv(data / "state_case_timeseries.csv")   .set_index(["detected_state"])
-    district_ts = pd.read_csv(data / "district_case_timeseries.csv").set_index(["detected_state", "detected_district"]).loc[state]
+    state_ts    = pd.read_csv(data / "state_case_timeseries.csv")\
+        .set_index(["detected_state"])\
+        .drop(columns = ["date", "time", "delta", "logdelta"])\
+        .rename(columns = {
+            "Deceased":     "dD",
+            "Hospitalized": "dT",
+            "Recovered":    "dR"
+        })
+    district_ts = pd.read_csv(data / "district_case_timeseries.csv")\
+        .set_index(["detected_state", "detected_district"]).loc[state]\
+        .drop(columns = ["date", "time", "delta", "logdelta"])\
+        .rename(columns = {
+            "Deceased":     "dD",
+            "Hospitalized": "dT",
+            "Recovered":    "dR"
+        })
     
     state_Rt    = pd.read_csv(data / f"{state_code}_state_Rt.csv",    index_col = 0, parse_dates = ["dates"])\
         [["dates", "Rt_pred"]]\
