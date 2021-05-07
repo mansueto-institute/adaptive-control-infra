@@ -89,7 +89,7 @@ def assemble_data(request):
     
     vax = pd.read_csv(data / "vaccine_doses_statewise.csv").set_index("State").T
     vax.columns = vax.columns.str.title()
-    vax.set_index(pd.to_datetime(vax.index, format = "%d/%m/%Y"), inplace = True)
+    vax.set_index(pd.to_datetime(vax.index), inplace = True)
 
     smooth = notched_smoothing(window = window)
     simulation_start = pd.Timestamp.today() - pd.Timedelta(days = cutoff)
