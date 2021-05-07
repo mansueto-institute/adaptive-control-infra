@@ -133,6 +133,7 @@ def assemble_data(request):
         R_sero = (sero_0*N_0 + sero_1*N_1 + sero_2*N_2 + sero_3*N_3 + sero_4*N_4 + sero_5*N_5 + sero_6*N_6)
         R_ratio = R_sero/R_conf if R_conf != 0 else 1 
         R0 = R_conf_smooth[simulation_start if simulation_start in R_conf_smooth.index else -1] * R_ratio
+        print("Scaled recoveries.")
         
         dD_conf = ts.loc[district].dD
         dD_conf = dD_conf.reindex(pd.date_range(dD_conf.index.min(), dD_conf.index.max()), fill_value = 0)
@@ -142,6 +143,7 @@ def assemble_data(request):
             dD_conf_smooth = dD_conf
         D_conf_smooth  = dD_conf_smooth.cumsum().astype(int)
         D0 = D_conf_smooth[simulation_start if simulation_start in D_conf_smooth.index else -1]
+        print("Scaled deaths.")
         
         dT_conf = ts.loc[district].dT
         pandemic_start = dT_conf.index.min()
@@ -155,6 +157,7 @@ def assemble_data(request):
         T_sero = R_sero + D0 
         T_ratio = T_sero/T_conf if T_conf != 0 else 1 
         T0 = T_conf_smooth[simulation_start if simulation_start in T_conf_smooth.index else -1] * T_ratio
+        print("Scaled cases.")
 
         S0 = max(0, N_tot - T0)
         dD0 = dD_conf_smooth[simulation_start if simulation_start in dD_conf_smooth.index else -1]
@@ -162,6 +165,7 @@ def assemble_data(request):
         I0 = max(0, (T0 - R0 - D0))
 
         V0 = vax[state][simulation_start if simulation_start in vax.index else -1] * N_tot / districts_to_run.loc[state].N_tot.sum()
+        print("Resolved vaccination data.")
 
         rows.append((state_code, state, district, 
             sero_0, N_0, sero_1, N_1, sero_2, N_2, sero_3, N_3, sero_4, N_4, sero_5, N_5, sero_6, N_6, N_tot, 
