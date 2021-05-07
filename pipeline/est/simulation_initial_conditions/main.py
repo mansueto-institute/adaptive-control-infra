@@ -14,7 +14,7 @@ cutoff    = 2   # most recent data to use
 excluded = ["Unknown", "Other State", "Airport Quarantine", "Railway Quarantine"]
 coalesce_states = ["Delhi", "Manipur", "Dadra And Nagar Haveli And Daman And Diu", "Andaman And Nicobar Islands"]
 survey_date = "October 23, 2020"
-columns  = ["state_code", "state", "district", "sero_0", "N_0", "sero_1", "N_1", "sero_2", "N_2", "sero_3", "N_3", "sero_4", "N_4", "sero_5", "N_5", "sero_6", "N_6", "N_tot", "Rt", "Rt_upper", "Rt_lower", "S0", "I0", "R0", "D0", "dT0", "dD0", "V0", "pandemic_start"]
+columns  = ["state_code", "state", "district", "sero_0", "N_0", "sero_1", "N_1", "sero_2", "N_2", "sero_3", "N_3", "sero_4", "N_4", "sero_5", "N_5", "sero_6", "N_6", "N_tot", "Rt", "S0", "I0", "R0", "D0", "dT0", "dD0", "V0", "pandemic_start"]
 # cloud details 
 bucket_name = "daily_pipeline"
 
