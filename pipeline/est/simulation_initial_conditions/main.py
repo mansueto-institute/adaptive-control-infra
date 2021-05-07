@@ -104,8 +104,8 @@ def assemble_data(request):
 
     rows = []
     for _ in districts_to_run.dropna().itertuples():
-        print(f"Scaling for {state_code}/{district}.")
         district, sero_0, sero_1, sero_2, sero_3, sero_4, sero_5, sero_6, N_0, N_1, N_2, N_3, N_4, N_5, N_6, N_tot, Rt = _
+        print(f"Scaling for {state_code}/{district}.")
 
         dR_conf = ts.loc[district].dR
         dR_conf = dR_conf.reindex(pd.date_range(dR_conf.index.min(), dR_conf.index.max()), fill_value = 0)
