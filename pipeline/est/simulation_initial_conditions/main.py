@@ -87,7 +87,7 @@ def assemble_data(request):
         [["district", "Rt_pred"]]\
         .set_index("district")
     
-    vax = pd.read_csv(data / "vaccine_doses_statewise.csv").set_index("State").T
+    vax = pd.read_csv(data / "vaccine_doses_statewise.csv").set_index("State").T.dropna()
     vax.columns = vax.columns.str.title()
     vax.set_index(pd.to_datetime(vax.index), inplace = True)
 
@@ -161,7 +161,7 @@ def assemble_data(request):
         dT0 = dT_conf_smooth[simulation_start if simulation_start in dT_conf_smooth.index else -1] * T_ratio
         I0 = max(0, (T0 - R0 - D0))
 
-        V0 = vax.loc[simulation_start if simulation_start in vax.index else -1][state] * N_tot / districts_to_run.loc[state].N_tot.sum()
+        V0 = vax[state][simulation_start if simulation_start in vax.index else -1] * N_tot / districts_to_run.loc[state].N_tot.sum()
 
         rows.append((state_code, state, district, 
             sero_0, N_0, sero_1, N_1, sero_2, N_2, sero_3, N_3, sero_4, N_4, sero_5, N_5, sero_6, N_6, N_tot, 
