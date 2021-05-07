@@ -107,7 +107,7 @@ def assemble_data(request):
         print(f"Scaling for {state_code}/{district}.")
         district, sero_0, sero_1, sero_2, sero_3, sero_4, sero_5, sero_6, N_0, N_1, N_2, N_3, N_4, N_5, N_6, N_tot, Rt = _
 
-        dR_conf = ts.loc[state, district].dR
+        dR_conf = ts.loc[district].dR
         dR_conf = dR_conf.reindex(pd.date_range(dR_conf.index.min(), dR_conf.index.max()), fill_value = 0)
         if len(dR_conf) >= window + 1:
             dR_conf_smooth = pd.Series(smooth(dR_conf), index = dR_conf.index).clip(0).astype(int)
@@ -120,7 +120,7 @@ def assemble_data(request):
         R_ratio = R_sero/R_conf if R_conf != 0 else 1 
         R0 = R_conf_smooth[simulation_start if simulation_start in R_conf_smooth.index else -1] * R_ratio
         
-        dD_conf = ts.loc[state, district].dD
+        dD_conf = ts.loc[district].dD
         dD_conf = dD_conf.reindex(pd.date_range(dD_conf.index.min(), dD_conf.index.max()), fill_value = 0)
         if len(dD_conf) >= window + 1:
             dD_conf_smooth = pd.Series(smooth(dD_conf), index = dD_conf.index).clip(0).astype(int)
@@ -129,7 +129,7 @@ def assemble_data(request):
         D_conf_smooth  = dD_conf_smooth.cumsum().astype(int)
         D0 = D_conf_smooth[simulation_start if simulation_start in D_conf_smooth.index else -1]
         
-        dT_conf = ts.loc[state, district].dT
+        dT_conf = ts.loc[district].dT
         dT_conf = dT_conf.reindex(pd.date_range(dT_conf.index.min(), dT_conf.index.max()), fill_value = 0)
         if len(dT_conf) >= window + 1:
             dT_conf_smooth = pd.Series(smooth(dT_conf), index = dT_conf.index).clip(0).astype(int)
