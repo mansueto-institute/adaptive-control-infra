@@ -23,6 +23,7 @@ states = [
     'HP',
     'HR',
     'JH',
+    'JK',
     'KA',
     'KL',
     'LA',
@@ -45,11 +46,13 @@ states = [
     'WB',
 ]
 
+# cloud compute operators; see references
+# 1) https://github.com/salrashid123/composer_gcf
+# 2) https://github.com/salrashid123/composer_gcf/blob/master/composer_to_gcf/to_gcf.py
+# 3) https://cloud.google.com/run/docs/authenticating/service-to-service#python
 class CloudFunction(SimpleHttpOperator):
-    # see 
-    # 1) https://github.com/salrashid123/composer_gcf
-    # 2) https://github.com/salrashid123/composer_gcf/blob/master/composer_to_gcf/to_gcf.py
-    # 3) https://cloud.google.com/run/docs/authenticating/service-to-service#python
+    ui_color   = "#2B6CE6"
+    ui_fgcolor = "#FFFFFF"
 
     def get_metadata_url(self):
         return f"{METADATA_ROOT}{AUDIENCE_ROOT}/{self.endpoint}"
@@ -60,6 +63,8 @@ class CloudFunction(SimpleHttpOperator):
             .run(self.endpoint, self.data, {"Content-Type": "application/json", "Authorization": f"Bearer {token}"}, self.extra_options)
 
 class CloudRun(CloudFunction):
+    ui_color   = "#175AE1"
+    
     def __init__(self, run_url, conn_id, *args, **kwargs):
         conn = Connection(
             conn_id   = conn_id,
@@ -107,17 +112,15 @@ def tweet_Rt_report(state):
     )
 
 def simulation_initial_conditions(state):
-    return DummyOperator(task_id = f"simulation_initial_conditions_{state}", 
-    start_date   = datetime.datetime(2021, 4, 29))
-    # return CloudFunction(
-    #     task_id      = f"simulation_initial_conditions_{state}",
-    #     method       = "POST",
-    #     endpoint     = "STEP_3_EXP-tweet-Rt-report",
-    #     start_date   = datetime.datetime(2021, 4, 29),
-    #     http_conn_id = "cloud_functions",
-    #     data         = json.dumps({"state_code": state}),
-    #     retries      = 3
-    # )
+    return CloudFunction(
+        task_id      = f"simulation_initial_conditions_{state}",
+        method       = "POST",
+        endpoint     = "STEP_2_SIM-assemble-initial-conditions",
+        start_date   = datetime.datetime(2021, 4, 29),
+        http_conn_id = "cloud_functions",
+        data         = json.dumps({"state_code": state}),
+        retries      = 3
+    )
 
 def simulation_step(state):
     return DummyOperator(task_id = f"simulation_step_{state}",
@@ -133,7 +136,7 @@ def simulation_step(state):
     # )
 
 def get_dag(name: str, tweet: bool) -> models.DAG:
-    with models.DAG(name, schedule_interval = "45 8 * * *", catchup = False) as dag:
+    with models.DAG(name, schedule_interval = "45 8 * * *" if tweet else None, catchup = False) as dag:
         get_timeseries = CloudFunction(
             task_id      = "get_timeseries",
             method       = "POST",
