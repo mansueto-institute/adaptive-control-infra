@@ -168,8 +168,8 @@ def assemble_data(request):
             Rt, S0, I0, R0, D0, dT0, dD0, V0, pandemic_start
         ))
     
-    pd.DataFrame(rows, columns = columns).to_csv(data / f"simulation_initial_conditions_{state_code}.csv")
-    bucket.blob(f"pipeline/sim/input/simulation_initial_conditions_{state_code}.csv")\
-        .upload_from_filename(str(data / f"simulation_initial_conditions_{state_code}.csv"), content_type = "text/csv")
+    pd.DataFrame(rows, columns = columns).to_csv(data / f"{state_code}_simulation_initial_conditions.csv")
+    bucket.blob(f"pipeline/sim/input/{state_code}_simulation_initial_conditions.csv")\
+        .upload_from_filename(str(data / f"{state_code}_simulation_initial_conditions.csv"), content_type = "text/csv")
 
     return "OK!"
