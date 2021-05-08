@@ -81,7 +81,7 @@ class CloudRun(CloudFunction):
         super(CloudRun, self).__init__(*args, **kwargs)
         self.run_url = run_url
 
-    def get_token(self):
+    def get_metadata_url(self):
         return f"{METADATA_ROOT}https://{self.run_url}"
 
 def epi_step(state):
