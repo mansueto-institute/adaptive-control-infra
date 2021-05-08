@@ -13,11 +13,15 @@ AUDIENCE_ROOT = os.environ["GCF_URL"]
 METADATA_ROOT = os.environ["METADATA"]
 
 states = [
+    'AN',
     'AP',
     'AR',
     'AS',
     'BR',
+    'CH',
     'CT',
+    'DL',
+    'DNDD',
     'GA',
     'GJ',
     'HP',
@@ -36,6 +40,7 @@ states = [
     'NL',
     'OR',
     'PB',
+    'PY',
     'RJ',
     'SK',
     'TG',
@@ -43,7 +48,7 @@ states = [
     'TR',
     'UP',
     'UT',
-    'WB',
+    'WB'
 ]
 
 # cloud compute operators; see references
@@ -77,7 +82,7 @@ class CloudRun(CloudFunction):
         self.run_url = run_url
 
     def get_token(self):
-        return f"{METADATA_ROOT}{self.run_url}"
+        return f"{METADATA_ROOT}https://{self.run_url}"
 
 def epi_step(state):
     return CloudFunction(
