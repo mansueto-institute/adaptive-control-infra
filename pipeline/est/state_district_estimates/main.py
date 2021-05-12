@@ -78,7 +78,7 @@ def run_estimates(request):
     for district in filter(lambda _: _ not in excluded, district_ts.index.get_level_values(0).unique()):
         lgd_district_data = crosswalk.query("state_api == @state & district_api == @district").filter(like = "lgd_district").drop_duplicates()
         if not lgd_district_data.empty:
-            lgd_district_name, lgd_district_id = lgd_district_data
+            lgd_district_name, lgd_district_id = lgd_district_data.iloc[0]
         else:
             lgd_district_name, lgd_district_id = lgd_state_name, lgd_state_id
         try:
