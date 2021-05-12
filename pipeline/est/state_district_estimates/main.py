@@ -33,12 +33,16 @@ def run_estimates(request):
     print(f"Rt estimation for {state_code} ({state}) started")
     
     bucket = storage.Client().bucket(bucket_name)
+    bucket.blob("pipeline/commons/refs/all_crosswalk.dta")\
+        .download_to_filename("/tmp/all_crosswalk.csv")
+
     bucket.blob("pipeline/raw/state_case_timeseries.csv")\
         .download_to_filename("/tmp/state_case_timeseries.csv")
 
     bucket.blob("pipeline/raw/district_case_timeseries.csv")\
         .download_to_filename("/tmp/district_case_timeseries.csv")
 
+    crosswalk   = pd.read_stata("/tmp/all_crosswalk.csv")
     state_ts    = pd.read_csv("/tmp/state_case_timeseries.csv")   .set_index(["detected_state"])
     district_ts = pd.read_csv("/tmp/district_case_timeseries.csv").set_index(["detected_state", "detected_district"]).loc[state]
 
@@ -47,13 +51,14 @@ def run_estimates(request):
         dates,
         Rt_pred, Rt_CI_upper, Rt_CI_lower,
         T_pred, T_CI_upper, T_CI_lower,
-        total_cases, new_cases_ts,
-        anomalies, anomaly_dates
+        total_cases, new_cases_ts, *_
     ) = analytical_MPVS(
         state_ts.loc[state].set_index("status_change_date").iloc[-lookback:-cutoff].Hospitalized, 
         CI = CI, smoothing = notched_smoothing(window = smoothing), totals = False
     )
     
+    lgd_state_name, lgd_state_id = crosswalk.query("state_api == @state").filter(like = "lgd_state").drop_duplicates().iloc[0]
+
     pd.DataFrame(data = {
         "dates": dates,
         "Rt_pred": Rt_pred,
@@ -64,18 +69,24 @@ def run_estimates(request):
         "T_CI_lower": T_CI_lower,
         "total_cases": total_cases[2:],
         "new_cases_ts": new_cases_ts,
-    }).to_csv("/tmp/state_Rt.csv")
+    })\
+        .assign(state = state, lgd_state_name = lgd_state_name, lgd_state_id = lgd_state_id)\
+        .to_csv("/tmp/state_Rt.csv")
 
     print(f"Estimating district-level Rt for {state_code}")
     estimates = []
     for district in filter(lambda _: _ not in excluded, district_ts.index.get_level_values(0).unique()):
+        lgd_district_data = crosswalk.query("state_api == @state & district_api == @district").filter(like = "lgd_district").drop_duplicates()
+        if lgd_district_data:
+            lgd_district_name, lgd_district_id = lgd_district_data
+        else:
+            lgd_district_name, lgd_district_id = lgd_state_name, lgd_state_id
         try:
             (
                 dates,
                 Rt_pred, Rt_CI_upper, Rt_CI_lower,
                 T_pred, T_CI_upper, T_CI_lower,
-                total_cases, new_cases_ts,
-                anomalies, anomaly_dates
+                total_cases, new_cases_ts, *_
             ) = analytical_MPVS(district_ts.loc[district].set_index("status_change_date").iloc[-lookback:-cutoff].Hospitalized, CI = CI, smoothing = notched_smoothing(window = smoothing), totals = False)
             estimates.append(pd.DataFrame(data = {
                 "dates": dates,
@@ -87,7 +98,7 @@ def run_estimates(request):
                 "T_CI_lower": T_CI_lower,
                 "total_cases": total_cases[2:],
                 "new_cases_ts": new_cases_ts,
-            }).assign(district = district))
+            }).assign(state = state, lgd_state_name = lgd_state_name, lgd_state_id = lgd_state_id, district = district, lgd_district_name = lgd_district_name, lgd_district_id = lgd_district_id))
         except Exception as e:
             print(f"ERROR when estimating Rt for {district}, {state_code}", e)
             print(traceback.print_exc())
