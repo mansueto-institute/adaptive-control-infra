@@ -92,13 +92,13 @@ def run_estimates(request):
             lgd_district_name, lgd_district_id = lgd_state_name, lgd_state_id
         try:
             (
-                dates[1:],
+                dates,
                 Rt_pred, Rt_CI_upper, Rt_CI_lower,
                 T_pred, T_CI_upper, T_CI_lower,
                 total_cases, new_cases_ts, *_
             ) = analytical_MPVS(district_cases.loc[district].iloc[-lookback:-cutoff].confirmed, CI = CI, smoothing = notched_smoothing(window = smoothing), totals = True)
             estimates.append(pd.DataFrame(data = {
-                "dates": dates,
+                "dates": dates[1"],
                 "Rt_pred": Rt_pred,
                 "Rt_CI_upper": Rt_CI_upper,
                 "Rt_CI_lower": Rt_CI_lower,
