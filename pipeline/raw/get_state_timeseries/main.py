@@ -55,26 +55,22 @@ def run_download(_):
     india_timeseries.to_csv(data/"india_case_timeseries.csv")
     state_timeseries.to_csv(data/"state_case_timeseries.csv")
     district_timeseries.to_csv(data/"district_case_timeseries.csv")
-        
+    
+    # download aggregated CSVs as well
+    download_data(data, "states.csv")
+    download_data(data, "districts.csv")
 
     print("Uploading time series to storage bucket.")
-    storage.Client()\
-        .bucket(bucket_name)\
-        .blob("pipeline/raw/india_case_timeseries.csv")\
-        .upload_from_filename(
-            str(data/"india_case_timeseries.csv"), 
-            content_type = "text/csv")
-    storage.Client()\
-        .bucket(bucket_name)\
-        .blob("pipeline/raw/state_case_timeseries.csv")\
-        .upload_from_filename(
-            str(data/"state_case_timeseries.csv"), 
-            content_type = "text/csv")
-    storage.Client()\
-        .bucket(bucket_name)\
-        .blob("pipeline/raw/district_case_timeseries.csv")\
-        .upload_from_filename(
-            str(data/"district_case_timeseries.csv"), 
-            content_type = "text/csv")
+    bucket = storage.Client().bucket(bucket_name)
+    bucket.blob("pipeline/raw/india_case_timeseries.csv")\
+        .upload_from_filename(str(data/"india_case_timeseries.csv"),    content_type = "text/csv")
+    bucket.blob("pipeline/raw/state_case_timeseries.csv")\
+        .upload_from_filename(str(data/"state_case_timeseries.csv"),    content_type = "text/csv")
+    bucket.blob("pipeline/raw/district_case_timeseries.csv")\
+        .upload_from_filename(str(data/"district_case_timeseries.csv"), content_type = "text/csv")
+    bucket.blob("pipeline/raw/districts.csv")\
+        .upload_from_filename(str(data/"districts.csv"), content_type = "text/csv")
+    bucket.blob("pipeline/raw/states.csv")\
+        .upload_from_filename(str(data/"states.csv"), content_type = "text/csv")
 
     return 'OK!'

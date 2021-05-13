@@ -43,9 +43,8 @@ def run_estimates(request):
         .download_to_filename("/tmp/district_case_timeseries.csv")
 
     crosswalk   = pd.read_stata("/tmp/all_crosswalk.csv")
-    state_ts    = pd.read_csv("/tmp/state_case_timeseries.csv")   .set_index(["detected_state"])
-    district_ts = pd.read_csv("/tmp/district_case_timeseries.csv").set_index(["detected_state", "detected_district"]).loc[state]
-
+    district_cases = pd.read_csv("/tmp/district_case_timeseries.csv").set_index(["state", "district"]).loc[state]
+    state_cases    = pd.read_csv("/tmp/state_case_timeseries.csv")   .set_index(["state"]).loc[state]
     print(f"Estimating state-level Rt for {state_code}") 
     (
         dates,
@@ -53,7 +52,7 @@ def run_estimates(request):
         T_pred, T_CI_upper, T_CI_lower,
         total_cases, new_cases_ts, *_
     ) = analytical_MPVS(
-        state_ts.loc[state].set_index("status_change_date").iloc[-lookback:-cutoff].Hospitalized, 
+        state_cases.loc[state].set_index("date").iloc[-lookback:-cutoff].Hospitalized, 
         CI = CI, smoothing = notched_smoothing(window = smoothing), totals = False
     )
     
@@ -75,7 +74,7 @@ def run_estimates(request):
 
     print(f"Estimating district-level Rt for {state_code}")
     estimates = []
-    for district in filter(lambda _: _ not in excluded, district_ts.index.get_level_values(0).unique()):
+    for district in filter(lambda _: _ not in excluded, district_cases.index.get_level_values(0).unique()):
         lgd_district_data = crosswalk.query("state_api == @state & district_api == @district").filter(like = "lgd_district").drop_duplicates()
         if not lgd_district_data.empty:
             lgd_district_name, lgd_district_id = lgd_district_data.iloc[0]
@@ -87,7 +86,7 @@ def run_estimates(request):
                 Rt_pred, Rt_CI_upper, Rt_CI_lower,
                 T_pred, T_CI_upper, T_CI_lower,
                 total_cases, new_cases_ts, *_
-            ) = analytical_MPVS(district_ts.loc[district].set_index("status_change_date").iloc[-lookback:-cutoff].Hospitalized, CI = CI, smoothing = notched_smoothing(window = smoothing), totals = False)
+            ) = analytical_MPVS(district_cases.loc[district].set_index("date").iloc[-lookback:-cutoff].Hospitalized, CI = CI, smoothing = notched_smoothing(window = smoothing), totals = False)
             estimates.append(pd.DataFrame(data = {
                 "dates": dates,
                 "Rt_pred": Rt_pred,
