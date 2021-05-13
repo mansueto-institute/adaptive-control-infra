@@ -12,7 +12,7 @@ smoothing = 10
 CI        = 0.95
 lookback  = 120 # how many days back to start estimation
 cutoff    = 2   # most recent data to use 
-dissolved_states = ["Delhi", "Chandigarh", "Manipur", "Sikkim", "Dadra And Nagar Haveli And Daman And Diu", "Andaman And Nicobar Islands"]
+dissolved_states = ["Delhi", "Chandigarh", "Manipur", "Sikkim", "Dadra And Nagar Haveli And Daman And Diu", "Andaman And Nicobar Islands", "Telangana", "Goa", "Assam"]
 excluded = ["Unknown", "Other State", "Airport Quarantine", "Railway Quarantine", "BSF Camp", "Foreign Evacuees", "Italians"]
 
 # cloud details 
