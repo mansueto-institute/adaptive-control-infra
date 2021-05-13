@@ -17,6 +17,8 @@ excluded = ["Unknown", "Other State", "Airport Quarantine", "Railway Quarantine"
 # cloud details 
 bucket_name = "daily_pipeline"
 
+
+
 def get(request, key):
     request_json = request.get_json()
     if request.args and key in request.args:
@@ -36,15 +38,23 @@ def run_estimates(request):
     bucket.blob("pipeline/commons/refs/all_crosswalk.dta")\
         .download_to_filename("/tmp/all_crosswalk.csv")
 
-    bucket.blob("pipeline/raw/state_case_timeseries.csv")\
-        .download_to_filename("/tmp/state_case_timeseries.csv")
+    bucket.blob("pipeline/raw/states.csv")\
+        .download_to_filename("/tmp/states.csv")
 
-    bucket.blob("pipeline/raw/district_case_timeseries.csv")\
-        .download_to_filename("/tmp/district_case_timeseries.csv")
+    bucket.blob("pipeline/raw/districts.csv")\
+        .download_to_filename("/tmp/districts.csv")
 
     crosswalk   = pd.read_stata("/tmp/all_crosswalk.csv")
-    district_cases = pd.read_csv("/tmp/district_case_timeseries.csv").set_index(["state", "district"]).loc[state]
-    state_cases    = pd.read_csv("/tmp/state_case_timeseries.csv")   .set_index(["state"]).loc[state]
+    district_cases = pd.read_csv("/Users/satej/Downloads/pipeline_raw_districts.csv")\
+        .rename(columns = str.lower)\
+        .set_index(["state", "district", "date"])\
+        .sort_index()\
+        .loc[state]
+    state_cases = pd.read_csv("/tmp/states.csv")\
+        .rename(columns = str.lower)\
+        .set_index(["state", "date"])\
+        .sort_index()\
+        .loc[state]
     print(f"Estimating state-level Rt for {state_code}") 
     (
         dates,
@@ -52,8 +62,8 @@ def run_estimates(request):
         T_pred, T_CI_upper, T_CI_lower,
         total_cases, new_cases_ts, *_
     ) = analytical_MPVS(
-        state_cases.loc[state].set_index("date").iloc[-lookback:-cutoff].Hospitalized, 
-        CI = CI, smoothing = notched_smoothing(window = smoothing), totals = False
+        state_cases.loc[state].iloc[-lookback:-cutoff].confirmed, 
+        CI = CI, smoothing = notched_smoothing(window = smoothing), totals = True
     )
     
     lgd_state_name, lgd_state_id = crosswalk.query("state_api == @state").filter(like = "lgd_state").drop_duplicates().iloc[0]
@@ -86,7 +96,7 @@ def run_estimates(request):
                 Rt_pred, Rt_CI_upper, Rt_CI_lower,
                 T_pred, T_CI_upper, T_CI_lower,
                 total_cases, new_cases_ts, *_
-            ) = analytical_MPVS(district_cases.loc[district].set_index("date").iloc[-lookback:-cutoff].Hospitalized, CI = CI, smoothing = notched_smoothing(window = smoothing), totals = False)
+            ) = analytical_MPVS(district_cases.loc[district].iloc[-lookback:-cutoff].confirmed, CI = CI, smoothing = notched_smoothing(window = smoothing), totals = True)
             estimates.append(pd.DataFrame(data = {
                 "dates": dates,
                 "Rt_pred": Rt_pred,
