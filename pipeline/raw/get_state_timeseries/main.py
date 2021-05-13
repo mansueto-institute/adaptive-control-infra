@@ -19,55 +19,12 @@ def run_download(_):
     root = Path("/tmp")
     data = mkdir(root/"data")
 
-    # determine number of files to download from API documentation
-    print("Determing latest API file.")
-    r = requests.get("https://api.covid19india.org/")
-    latest_csv_id = bs(r.text)\
-        .find(text = "Raw Data")\
-        .findNext("table")\
-        .findChildren("a")[-1].text\
-        .split("/")[-1]\
-            .replace("raw_data", "")\
-            .replace(".csv",     "")
-    latest_csv_number = int(latest_csv_id)
-
-
-    print(f"Downloading files up until raw_data{latest_csv_id}.csv.")
-    paths = { 
-        "v3": [data_path(i) for i in (1, 2)],
-        "v4": [data_path(i) for i in range(3, 1 + latest_csv_number)]
-    }
-
-    for path in paths["v3"] + paths["v4"] :
-        print(f"Downloading {path}.")
-        download_data(data, path)
-
-    print("Assembling case time series from case reports.")
-    case_reports = load_all_data(
-        v3_paths = [data/path for path in paths['v3']], 
-        v4_paths = [data/path for path in paths['v4']]
-    )
-
-    india_timeseries    = get_time_series(case_reports, None)
-    state_timeseries    = get_time_series(case_reports, "detected_state")
-    district_timeseries = get_time_series(case_reports, ["detected_state", "detected_district"])
-
-    india_timeseries.to_csv(data/"india_case_timeseries.csv")
-    state_timeseries.to_csv(data/"state_case_timeseries.csv")
-    district_timeseries.to_csv(data/"district_case_timeseries.csv")
-    
     # download aggregated CSVs as well
     download_data(data, "states.csv")
     download_data(data, "districts.csv")
 
     print("Uploading time series to storage bucket.")
     bucket = storage.Client().bucket(bucket_name)
-    bucket.blob("pipeline/raw/india_case_timeseries.csv")\
-        .upload_from_filename(str(data/"india_case_timeseries.csv"),    content_type = "text/csv")
-    bucket.blob("pipeline/raw/state_case_timeseries.csv")\
-        .upload_from_filename(str(data/"state_case_timeseries.csv"),    content_type = "text/csv")
-    bucket.blob("pipeline/raw/district_case_timeseries.csv")\
-        .upload_from_filename(str(data/"district_case_timeseries.csv"), content_type = "text/csv")
     bucket.blob("pipeline/raw/districts.csv")\
         .upload_from_filename(str(data/"districts.csv"), content_type = "text/csv")
     bucket.blob("pipeline/raw/states.csv")\

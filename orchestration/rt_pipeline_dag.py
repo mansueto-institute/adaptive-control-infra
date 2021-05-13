@@ -140,7 +140,7 @@ def simulation_step(state):
     #     retries      = 3
     # )
 
-def get_dag(name: str, tweet: bool) -> models.DAG:
+def get_dag(name: str, report: bool, tweet: bool) -> models.DAG:
     with models.DAG(name, schedule_interval = "45 8 * * *" if tweet else None, catchup = False) as dag:
         get_timeseries = CloudFunction(
             task_id      = "get_timeseries",
@@ -164,11 +164,15 @@ def get_dag(name: str, tweet: bool) -> models.DAG:
 
         for state in states:
             epi_step_for_state = epi_step(state)
+            if report:
+                report_step_for_state = create_Rt_report(state)
+                epi_step_for_state >> report_step_for_state
+                if tweet:
+                    report_step_for_state >> tweet_Rt_report(state)
             fanout >> epi_step_for_state >> simulation_initial_conditions(state) >> simulation_step(state)
-            if tweet:
-                epi_step_for_state >> create_Rt_report(state) >> tweet_Rt_report(state)
            
         return dag 
 
-rt_pipeline          = get_dag("Rt_pipeline",          tweet = True)
-rt_pipeline_no_tweet = get_dag("Rt_pipeline_no_tweet", tweet = False)
+rt_pipeline          = get_dag("Rt_pipeline",           report = True,  tweet = True)
+rt_pipeline_no_tweet = get_dag("Rt_pipeline_no_tweet",  report = True,  tweet = False)
+rt_pipeline_no_rpt   = get_dag("Rt_pipeline_no_report", report = False, tweet = False)

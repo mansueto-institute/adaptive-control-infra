@@ -12,7 +12,8 @@ smoothing = 10
 CI        = 0.95
 lookback  = 120 # how many days back to start estimation
 cutoff    = 2   # most recent data to use 
-excluded = ["Unknown", "Other State", "Airport Quarantine", "Railway Quarantine"]
+dissolved_states = ["Delhi", "Chandigarh", "Manipur", "Sikkim", "Dadra And Nagar Haveli And Daman And Diu", "Andaman And Nicobar Islands"]
+excluded = ["Unknown", "Other State", "Airport Quarantine", "Railway Quarantine", "BSF Camp", "Foreign Evacuees", "Italians"]
 
 # cloud details 
 bucket_name = "daily_pipeline"
@@ -49,11 +50,13 @@ def run_estimates(request):
         .rename(columns = str.lower)\
         .set_index(["state", "district", "date"])\
         .sort_index()\
+        .rename(index = lambda s: s.replace(" and ", " & "), level = 0)\
         .loc[state]
     state_cases = pd.read_csv("/tmp/states.csv")\
         .rename(columns = str.lower)\
         .set_index(["state", "date"])\
         .sort_index()\
+        .rename(index = lambda s: s.replace(" and ", " & "), level = 0)\
         .loc[state]
     print(f"Estimating state-level Rt for {state_code}") 
     (
@@ -82,39 +85,45 @@ def run_estimates(request):
         .assign(state = state, lgd_state_name = lgd_state_name, lgd_state_id = lgd_state_id)\
         .to_csv("/tmp/state_Rt.csv")
 
-    print(f"Estimating district-level Rt for {state_code}")
-    estimates = []
-    for district in filter(lambda _: _ not in excluded, district_cases.index.get_level_values(0).unique()):
-        lgd_district_data = crosswalk.query("state_api == @state & district_api == @district").filter(like = "lgd_district").drop_duplicates()
-        if not lgd_district_data.empty:
-            lgd_district_name, lgd_district_id = lgd_district_data.iloc[0]
-        else:
-            lgd_district_name, lgd_district_id = lgd_state_name, lgd_state_id
-        try:
-            (
-                dates,
-                Rt_pred, Rt_CI_upper, Rt_CI_lower,
-                T_pred, T_CI_upper, T_CI_lower,
-                total_cases, new_cases_ts, *_
-            ) = analytical_MPVS(district_cases.loc[district].iloc[-lookback:-cutoff].confirmed, CI = CI, smoothing = notched_smoothing(window = smoothing), totals = True)
-            estimates.append(pd.DataFrame(data = {
-                "dates": dates[1:],
-                "Rt_pred": Rt_pred,
-                "Rt_CI_upper": Rt_CI_upper,
-                "Rt_CI_lower": Rt_CI_lower,
-                "T_pred": T_pred,
-                "T_CI_upper": T_CI_upper,
-                "T_CI_lower": T_CI_lower,
-                "total_cases": total_cases[2:],
-                "new_cases_ts": new_cases_ts,
-            }).assign(state = state, lgd_state_name = lgd_state_name, lgd_state_id = lgd_state_id, district = district, lgd_district_name = lgd_district_name, lgd_district_id = lgd_district_id))
-        except Exception as e:
-            print(f"ERROR when estimating Rt for {district}, {state_code}", e)
-            print(traceback.print_exc())
-
-    pd.concat(estimates).to_csv("/tmp/district_Rt.csv")
-    
     # upload to cloud
-    bucket.blob(f"pipeline/est/{state_code}_state_Rt.csv")      .upload_from_filename("/tmp/state_Rt.csv",    content_type = "text/csv")
-    bucket.blob(f"pipeline/est/{state_code}_district_Rt.csv")   .upload_from_filename("/tmp/district_Rt.csv", content_type = "text/csv")
+    bucket.blob(f"pipeline/est/{state_code}_state_Rt.csv").upload_from_filename("/tmp/state_Rt.csv",    content_type = "text/csv")
+    
+    if state in dissolved_states:
+        print(f"Skipping district-level Rt for {state_code}")
+    else:
+        print(f"Estimating district-level Rt for {state_code}")
+        estimates = []
+        for district in filter(lambda _: _ not in excluded, district_cases.index.get_level_values(0).unique()):
+            lgd_district_data = crosswalk.query("state_api == @state & district_api == @district").filter(like = "lgd_district").drop_duplicates()
+            if not lgd_district_data.empty:
+                lgd_district_name, lgd_district_id = lgd_district_data.iloc[0]
+            else:
+                lgd_district_name, lgd_district_id = lgd_state_name, lgd_state_id
+            try:
+                (
+                    dates,
+                    Rt_pred, Rt_CI_upper, Rt_CI_lower,
+                    T_pred, T_CI_upper, T_CI_lower,
+                    total_cases, new_cases_ts, *_
+                ) = analytical_MPVS(district_cases.loc[district].iloc[-lookback:-cutoff].confirmed, CI = CI, smoothing = notched_smoothing(window = smoothing), totals = True)
+                estimates.append(pd.DataFrame(data = {
+                    "dates": dates[1:],
+                    "Rt_pred": Rt_pred,
+                    "Rt_CI_upper": Rt_CI_upper,
+                    "Rt_CI_lower": Rt_CI_lower,
+                    "T_pred": T_pred,
+                    "T_CI_upper": T_CI_upper,
+                    "T_CI_lower": T_CI_lower,
+                    "total_cases": total_cases[2:],
+                    "new_cases_ts": new_cases_ts,
+                }).assign(state = state, lgd_state_name = lgd_state_name, lgd_state_id = lgd_state_id, district = district, lgd_district_name = lgd_district_name, lgd_district_id = lgd_district_id))
+            except Exception as e:
+                print(f"ERROR when estimating Rt for {district}, {state_code}", e)
+                print(traceback.print_exc())
+
+        pd.concat(estimates).to_csv("/tmp/district_Rt.csv")
+    
+        # upload to cloud
+        bucket.blob(f"pipeline/est/{state_code}_district_Rt.csv").upload_from_filename("/tmp/district_Rt.csv", content_type = "text/csv")
+    
     return "OK!"
