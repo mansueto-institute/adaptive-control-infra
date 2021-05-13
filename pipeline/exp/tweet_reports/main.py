@@ -56,7 +56,7 @@ state_code_lookup = {
     'WB'  : 'West Bengal',
 }
 #  secret names
-secret_names = ["COVID_IWG_twitter_API_key", "COVID_IWG_twitter_secret_key", "Twitter_API_access_token", "Twitter_API_access_secret"]
+secret_names = ["API_key", "secret_key", "access_token", "access_secret"]
 
 def get(request, key):
     request_json = request.get_json()
@@ -67,15 +67,15 @@ def get(request, key):
     else:
         return None
 
-def get_twitter_client():
+def get_twitter_client(env = "PROD"):
     credentials = { 
         secret_name: secrets.access_secret_version({
-            "name": f"projects/{project_id}/secrets/{secret_name}/versions/latest"}
+            "name": f"projects/{project_id}/secrets/{env}_twitter_{secret_name}/versions/latest"}
         ).payload.data.decode("UTF-8")
         for secret_name in secret_names
     }
-    auth = tweepy.OAuthHandler(credentials["COVID_IWG_twitter_API_key"], credentials["COVID_IWG_twitter_secret_key"])
-    auth.set_access_token(credentials["Twitter_API_access_token"], credentials["Twitter_API_access_secret"])
+    auth = tweepy.OAuthHandler(credentials["API_key"], credentials["secret_key"])
+    auth.set_access_token(credentials["access_token"], credentials["access_secret"])
     api = tweepy.API(auth, wait_on_rate_limit = True, wait_on_rate_limit_notify = True)
     api.verify_credentials()
     return api
