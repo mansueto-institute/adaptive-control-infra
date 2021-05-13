@@ -62,7 +62,7 @@ def run_estimates(request):
         T_pred, T_CI_upper, T_CI_lower,
         total_cases, new_cases_ts, *_
     ) = analytical_MPVS(
-        state_cases.loc[state].iloc[-lookback:-cutoff].confirmed, 
+        state_cases.iloc[-lookback:-cutoff].confirmed, 
         CI = CI, smoothing = notched_smoothing(window = smoothing), totals = True
     )
     
