@@ -98,7 +98,7 @@ def run_estimates(request):
                 total_cases, new_cases_ts, *_
             ) = analytical_MPVS(district_cases.loc[district].iloc[-lookback:-cutoff].confirmed, CI = CI, smoothing = notched_smoothing(window = smoothing), totals = True)
             estimates.append(pd.DataFrame(data = {
-                "dates": dates[1"],
+                "dates": dates[1:],
                 "Rt_pred": Rt_pred,
                 "Rt_CI_upper": Rt_CI_upper,
                 "Rt_CI_lower": Rt_CI_lower,
