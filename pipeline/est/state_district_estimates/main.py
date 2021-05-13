@@ -45,7 +45,7 @@ def run_estimates(request):
         .download_to_filename("/tmp/districts.csv")
 
     crosswalk   = pd.read_stata("/tmp/all_crosswalk.csv")
-    district_cases = pd.read_csv("/Users/satej/Downloads/pipeline_raw_districts.csv")\
+    district_cases = pd.read_csv("/tmp/districts.csv")\
         .rename(columns = str.lower)\
         .set_index(["state", "district", "date"])\
         .sort_index()\
