@@ -102,6 +102,7 @@ def tweet_report(request):
     
     if state not in dissolved_states:
         bucket.blob(f"pipeline/rpt/{state_code}_Rt_top10.png").download_to_filename(f"/tmp/{state_code}_Rt_top10.png")
+        blobs.append(f"/tmp/{state_code}_Rt_top10.png")
     
     hashtag = f"#COVIDmetrics{state_code}"
     tag     = "@anup_malani" if state_code in tag_states else ""
