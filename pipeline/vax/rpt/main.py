@@ -6,7 +6,7 @@ def generate_vax_report(_):
 
     # URL of the csv used directly
 
-    df = pd.read_csv("https://www.dropbox.com/sh/y949ncp39towulf/AACd3YxzfB0fHkjQ1YJG-W2ba/covid/csv/covid_vaccination.csv?dl=0")
+    df = pd.read_csv("https://www.dropbox.com/sh/y949ncp39towulf/AACd3YxzfB0fHkjQ1YJG-W2ba/covid/csv/covid_vaccination.csv?dl=1")
 
     # convert date to proper format
     df["date"] = pd.to_datetime(df["date"])
