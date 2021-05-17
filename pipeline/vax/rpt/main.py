@@ -2,7 +2,7 @@ import pandas as pd
 from google.cloud import storage
 import matplotlib.pyplot as plt
 
-def generate_vax_report():
+def generate_vax_report(_):
 
     # URL of the csv used directly
 
@@ -40,3 +40,5 @@ def generate_vax_report():
     differenceDF = todayDF.copy()
     differenceDF["total_vac"] -= yesterdayDF["total_vac"]
     top10Districts = differenceDF.sort_values(by = "total_vac", ascending = False)[:10]
+    print(top10Districts)
+    return "OK!"
