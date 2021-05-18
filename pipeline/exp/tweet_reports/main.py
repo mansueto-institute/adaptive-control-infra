@@ -10,8 +10,8 @@ bucket = storage.Client().bucket(bucket_name)
 secrets = secretmanager.SecretManagerServiceClient()
 
 tag_states       = ["MH", "BR", "PB", "TN", "KL"]
-dissolved_states = ["Delhi", "Chandigarh", "Manipur", "Sikkim", "Dadra And Nagar Haveli And Daman And Diu", "Andaman And Nicobar Islands", "Telangana", "Goa", "Assam"]
-island_states    = ["Lakshadweep", "Puducherry"]
+dissolved_states = ["Delhi", "Chandigarh", "Manipur", "Sikkim", "Dadra And Nagar Haveli And Daman And Diu", "Andaman And Nicobar Islands", "Telangana", "Goa", "Assam", "Lakshadweep"]
+island_states    = ["Puducherry"]
 
 state_code_lookup = {
     'AN'  : 'Andaman & Nicobar Islands',
