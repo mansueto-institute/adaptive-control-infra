@@ -85,7 +85,7 @@ def get_twitter_client(env = "PROD"):
 def tweet_vax_report(request):
     state_code = get(request, "state_code")
 
-    twitter = get_twitter_client(env = "STAGING")
+    twitter = get_twitter_client(env = "staging")
     twitter.update_status(
             status = "vaccine test at {:0.2f}".format(time.time())
             )
