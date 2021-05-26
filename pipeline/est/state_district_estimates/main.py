@@ -95,7 +95,7 @@ def run_estimates(request):
     if state in dissolved_states:
         print(f"Skipping district-level Rt for {state_code}")
     else:
-        print(f"Estimating district-level Rt for {state_code}")
+        print(f"Estimating district-level Rt for {state} ({state_code})")
         estimates = []
         for district in filter(lambda _: _.strip() not in excluded, district_cases.index.get_level_values(0).unique()):
             print(f"running estimation for [{district}]")
