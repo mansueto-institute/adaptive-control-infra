@@ -33,7 +33,7 @@ def run_estimates(request):
     state_code = get(request, 'state_code')
     state = state_code_lookup[state_code]
 
-    print(f"Rt estimation for {state_code} ({state}) started")
+    print(f"Rt estimation for {state} ({state_code}) started")
     
     bucket = storage.Client().bucket(bucket_name)
     bucket.blob("pipeline/commons/refs/all_crosswalk.dta")\
