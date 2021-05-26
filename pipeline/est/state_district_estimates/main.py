@@ -97,7 +97,8 @@ def run_estimates(request):
     else:
         print(f"Estimating district-level Rt for {state_code}")
         estimates = []
-        for district in filter(lambda _: _ not in excluded, district_cases.index.get_level_values(0).unique()):
+        for district in filter(lambda _: _.strip() not in excluded, district_cases.index.get_level_values(0).unique()):
+            print(f"running estimation for [{district}]")
             lgd_district_data = crosswalk.query("state_api == @normalized_state & district_api == @district").filter(like = "lgd_district").drop_duplicates()
             if not lgd_district_data.empty:
                 lgd_district_name, lgd_district_id = lgd_district_data.iloc[0]
