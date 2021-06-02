@@ -92,7 +92,7 @@ def run_estimates(request):
         print(f"ERROR when estimating Rt for {state_code}", e)
         print(traceback.print_exc())
     
-    if state in dissolved_states:
+    if normalized_state in dissolved_states:
         print(f"Skipping district-level Rt for {state_code}")
     else:
         print(f"Estimating district-level Rt for {state} ({state_code})")
