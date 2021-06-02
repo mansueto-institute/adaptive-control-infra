@@ -26,7 +26,7 @@ bucket = storage.Client().bucket(bucket_name)
 def generate_report(state_code: str):
     print(f"Received request for {state_code}.")
     state = state_code_lookup[state_code]
-    normalized_state = state.replace(" and ", " And ")
+    normalized_state = state.replace(" and ", " And ").replace(" & ", " And ")
     blobs = { 
         f"pipeline/est/{state_code}_state_Rt.csv"   : f"/tmp/state_Rt_{state_code}.csv",
         f"pipeline/est/{state_code}_district_Rt.csv": f"/tmp/district_Rt_{state_code}.csv",

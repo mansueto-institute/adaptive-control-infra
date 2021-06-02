@@ -83,7 +83,7 @@ def get_twitter_client(env = "PROD"):
 def tweet_report(request):
     state_code = get(request, "state_code")
     state = state_code_lookup[state_code]
-    normalized_state = state.replace(" and ", " And ")
+    normalized_state = state.replace(" and ", " And ").replace(" & ", " And ")
     print(f"Tweeting report for {state_code} ({state}).")
 
     blobs = []
