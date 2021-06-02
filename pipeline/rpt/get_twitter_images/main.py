@@ -31,7 +31,7 @@ def generate_report(state_code: str):
         f"pipeline/est/{state_code}_state_Rt.csv"   : f"/tmp/state_Rt_{state_code}.csv",
         f"pipeline/est/{state_code}_district_Rt.csv": f"/tmp/district_Rt_{state_code}.csv",
         f"pipeline/commons/maps/{state_code}.json"  : f"/tmp/state_{state_code}.geojson"
-    } if normalized_state not in [dissolved_states] else {
+    } if normalized_state not in dissolved_states else {
         f"pipeline/est/{state_code}_state_Rt.csv"   : f"/tmp/state_Rt_{state_code}.csv",
     }
     for (blob_name, filename) in blobs.items():
