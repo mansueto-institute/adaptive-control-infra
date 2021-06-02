@@ -37,7 +37,7 @@ def run_estimates(request):
     
     bucket = storage.Client().bucket(bucket_name)
     bucket.blob("pipeline/commons/refs/all_crosswalk.dta")\
-        .download_to_filename("/tmp/all_crosswalk.csv")
+        .download_to_filename("/tmp/all_crosswalk.dta")
 
     bucket.blob("pipeline/raw/states.csv")\
         .download_to_filename("/tmp/states.csv")
@@ -45,7 +45,7 @@ def run_estimates(request):
     bucket.blob("pipeline/raw/districts.csv")\
         .download_to_filename("/tmp/districts.csv")
 
-    crosswalk   = pd.read_stata("/tmp/all_crosswalk.csv")
+    crosswalk   = pd.read_stata("/tmp/all_crosswalk.dta")
     district_cases = pd.read_csv("/tmp/districts.csv")\
         .rename(columns = str.lower)\
         .set_index(["state", "district", "date"])\
@@ -59,7 +59,7 @@ def run_estimates(request):
         .rename(index = lambda s: s.replace(" and ", " & "), level = 0)\
         .loc[state]
     print(f"Estimating state-level Rt for {state_code}") 
-    normalized_state = state.replace(" and ", " & ")
+    normalized_state = state.replace(" and ", " And ").replace(" & ", " And ")
     lgd_state_name, lgd_state_id = crosswalk.query("state_api == @normalized_state").filter(like = "lgd_state").drop_duplicates().iloc[0]
     try:
         (
