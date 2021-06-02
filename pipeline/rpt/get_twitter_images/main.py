@@ -84,7 +84,7 @@ def generate_report(state_code: str):
         print(f"Skipped choropleth for {state_code}.")
 
 
-    if state not in dissolved_states:
+    if normalized_state not in dissolved_states:
         fig, ax = plt.subplots(1,1)
         ax.axis('tight')
         ax.axis('off')
