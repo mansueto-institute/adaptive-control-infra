@@ -83,6 +83,7 @@ def get_twitter_client(env = "PROD"):
 def tweet_report(request):
     state_code = get(request, "state_code")
     state = state_code_lookup[state_code]
+    normalized_state = state.replace(" and ", " And ")
     print(f"Tweeting report for {state_code} ({state}).")
 
     blobs = []
@@ -91,8 +92,8 @@ def tweet_report(request):
     bucket.blob(f"pipeline/rpt/{state_code}_Rt_timeseries.png").download_to_filename(f"/tmp/{state_code}_Rt_timeseries.png")
     blobs.append(f"/tmp/{state_code}_Rt_timeseries.png")
     
-    if state in (dissolved_states + island_states):
-        if state in dissolved_states:
+    if normalized_state in (dissolved_states + island_states):
+        if normalized_state in dissolved_states:
             caveats.append("calculations run at state-level")
         else: 
             caveats.append("map generation skipped")
