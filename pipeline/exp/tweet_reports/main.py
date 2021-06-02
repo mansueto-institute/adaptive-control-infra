@@ -101,7 +101,7 @@ def tweet_report(request):
         bucket.blob(f"pipeline/rpt/{state_code}_Rt_choropleth.png").download_to_filename(f"/tmp/{state_code}_Rt_choropleth.png")
         blobs.append(f"/tmp/{state_code}_Rt_choropleth.png")
     
-    if state not in dissolved_states:
+    if normalized_state not in dissolved_states:
         bucket.blob(f"pipeline/rpt/{state_code}_Rt_top10.png").download_to_filename(f"/tmp/{state_code}_Rt_top10.png")
         blobs.append(f"/tmp/{state_code}_Rt_top10.png")
     
