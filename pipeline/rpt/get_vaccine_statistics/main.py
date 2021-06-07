@@ -7,17 +7,17 @@ bucket_name = "daily_pipeline"
 bucket = storage.Client().bucket(bucket_name)
 
 state_lookup = {
- 'Andaman & Nicobar Islands': 'AN',
+ 'Andaman and Nicobar Islands': 'AN',
  'Andhra Pradesh': 'AP',
  'Arunachal Pradesh': 'AR',
  'Assam': 'AS',
  'Bihar': 'BR',
  'Chandigarh': 'CH',
  'Chhattisgarh': 'CT',
- 'Daman & Diu': 'DD',
- 'Dadra & Nagar Haveli and Daman & Diu': 'DDDN',
+ 'Daman and Diu': 'DD',
+ 'Dadra and Nagar Haveli and Daman and Diu': 'DDDN',
  'Delhi': 'DL',
- 'Dadra & Nagar Haveli': 'DN',
+ 'Dadra and Nagar Haveli': 'DN',
  'Goa': 'GA',
  'Gujarat': 'GJ',
  'Himachal Pradesh': 'HP',
