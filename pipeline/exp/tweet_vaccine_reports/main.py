@@ -89,6 +89,11 @@ def tweet_vax_report(request):
 
     bucket.blob("pipeline/rpt/first_dose_admin_{}.png".format(state)).download_to_filename("/tmp/first_dose_admin_{}.png".format(state))
     blobs.append("/tmp/first_dose_admin_{}.png".format(state))
+    bucket.blob("pipeline/rpt/second_dose_admin_{}.png".format(state)).download_to_filename("/tmp/second_dose_admin_{}.png".format(state))
+    blobs.append("/tmp/second_dose_admin_{}.png".format(state))
+    bucket.blob("pipeline/rpt/total_individuals_registered_{}.png".format(state)).download_to_filename("/tmp/total_individuals_registered_{}.png".format(state))
+    blobs.append("/tmp/total_individuals_registered_{}.png".format(state))
+
 
     twitter = get_twitter_client(env="staging")
     media_ids = [twitter.media_upload(blob).media_id for blob in blobs]
