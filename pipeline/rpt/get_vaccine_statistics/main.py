@@ -7,10 +7,10 @@ bucket = storage.Client().bucket(bucket_name)
 
 def transfer_to_bucket(file_path):
     size_kb = os.stat(file_path).st_size / 1000
-    print(f"Timeseries artifact size : {} KB".format(size_kb))
+    print("Timeseries artifact size : {} KB".format(size_kb))
     assert size_kb > 50
     file_name = file_path.split("/")[2]
-    bucket.blob(f"pipeline/rpt/{}".format(file_name)).upload_from_filename(file_path, conten_type="image/png")
+    bucket.blob("pipeline/rpt/{}".format(file_name)).upload_from_filename(file_path, content_type="image/png")
 
 def generate_vax_report(_):
 
@@ -31,17 +31,17 @@ def generate_vax_report(_):
         totalStateDailyAgg["first_dose_admin"].plot()
         plt.savefig("/tmp/first_dose_admin_{}.png".format(state))
         plt.close()
-        print(f"Generated first dose statistics plot for {}".format(state))
+        print("Generated first dose statistics plot for {}".format(state))
 
         totalStateDailyAgg["total_individuals_registered"].plot()
         plt.savefig("/tmp/total_individuals_registered_{}.png".format(state))
         plt.close()
-        print(f"Generated total individuals registered plot for {}".format(state))
+        print("Generated total individuals registered plot for {}".format(state))
 
         totalStateDailyAgg["second_dose_admin"].plot()
         plt.savefig("/tmp/second_dose_admin_{}.png".format(state))
         plt.close()
-        print(f"Generated second dose statistics plot for {}".format(state))
+        print("Generated second dose statistics plot for {}".format(state))
 
         # Check if the outputs are at least 50 kb and transfer them to buckets
         transfer_to_bucket("/tmp/first_dose_admin_{}.png".format(state))
