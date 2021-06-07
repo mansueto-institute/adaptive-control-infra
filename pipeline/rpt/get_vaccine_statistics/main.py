@@ -2,6 +2,16 @@ import pandas as pd
 from google.cloud import storage
 import matplotlib.pyplot as plt
 
+bucket_name = "daily_pipeline"
+bucket = storage.Client().bucket(bucket_name)
+
+def transfer_to_bucket(file_path):
+    size_kb = os.stat(file_path).st_size / 1000
+    print(f"Timeseries artifact size : {} KB".format(size_kb))
+    assert size_kb > 50
+    file_name = file_path.split("/")[2]
+    bucket.blob(f"pipeline/rpt/{}".format(file_name)).upload_from_filename(file_path, conten_type="image/png")
+
 def generate_vax_report(_):
 
     # URL of the csv used directly
@@ -18,19 +28,26 @@ def generate_vax_report(_):
         # state level total aggregates
         totalStateDailyAgg = stateDF.groupby("date").sum()
 
-        plt.subplots(1,1)
         totalStateDailyAgg["first_dose_admin"].plot()
         plt.savefig("/tmp/first_dose_admin_{}.png".format(state))
         plt.close()
-        plt.subplots(1,1)
+        print(f"Generated first dose statistics plot for {}".format(state))
+
         totalStateDailyAgg["total_individuals_registered"].plot()
         plt.savefig("/tmp/total_individuals_registered_{}.png".format(state))
         plt.close()
+        print(f"Generated total individuals registered plot for {}".format(state))
 
-        plt.subplots(1,1)
         totalStateDailyAgg["second_dose_admin"].plot()
-        plt.savefig("/tmp/second_dose_adming_{}.png".format(state))
+        plt.savefig("/tmp/second_dose_admin_{}.png".format(state))
         plt.close()
+        print(f"Generated second dose statistics plot for {}".format(state))
+
+        # Check if the outputs are at least 50 kb and transfer them to buckets
+        transfer_to_bucket("/tmp/first_dose_admin_{}.png".format(state))
+        transfer_to_bucket("/tmp/total_individuals_registered_{}.png".format(state))
+        transfer_to_bucket("/tmp/second_dose_admin_{}.png".format(state))
+
     # top 10 districts nationwide based on number of vaccines administered in a given day
 
     df["total_vac"] = df["male_vac"] + df["female_vac"] + df["trans_vac"]
