@@ -90,9 +90,9 @@ def generate_vax_report(_):
         print("Generated second dose statistics plot for {}".format(state))
 
         # Check if the outputs are at least 50 kb and transfer them to buckets
-        transfer_to_bucket("/tmp/first_dose_admin_{}.png".format(state))
-        transfer_to_bucket("/tmp/total_individuals_registered_{}.png".format(state))
-        transfer_to_bucket("/tmp/second_dose_admin_{}.png".format(state))
+        transfer_to_bucket("/tmp/first_dose_admin_{}.png".format(state_code))
+        transfer_to_bucket("/tmp/total_individuals_registered_{}.png".format(state_code))
+        transfer_to_bucket("/tmp/second_dose_admin_{}.png".format(state_code))
 
     # top 10 districts nationwide based on number of vaccines administered in a given day
 
