@@ -1,5 +1,3 @@
-from datetime import date
-
 import tweepy
 from google.cloud import secretmanager, storage
 
@@ -84,9 +82,18 @@ def get_twitter_client(env = "PROD"):
 
 def tweet_vax_report(request):
     state_code = get(request, "state_code")
+    state = state_code_lookup[state_code]
+    print("Tweeting vaccine report for {} ({}).".format(state_code, state))
 
-    twitter = get_twitter_client(env = "staging")
+    blobs = []
+
+    bucket.blob("pipeline/rpt/first_dose_admin_{}.png".format(state)).download_to_filename("/tmp/first_dose_admin_{}.png".format(state))
+    blobs.append("/tmp/first_dose_admin_{}.png".format(state))
+
+    twitter = get_twitter_client(env="staging")
+    media_ids = [twitter.media_upload(blob).media_id for blob in blobs]
     twitter.update_status(
-            status = "vaccine test at {:0.2f}".format(time.time())
+            status="vaccine test plots for {}".format(state),
+            media_ids=media_ids
             )
     return "OK!"

@@ -30,16 +30,19 @@ def generate_vax_report(_):
         totalStateDailyAgg = stateDF.groupby("date").sum()
 
         totalStateDailyAgg["first_dose_admin"].plot()
+        plt.title("Number of first doses administered - {}".format)
         plt.savefig("/tmp/first_dose_admin_{}.png".format(state))
         plt.close()
         print("Generated first dose statistics plot for {}".format(state))
 
         totalStateDailyAgg["total_individuals_registered"].plot()
+        plt.title("Number of individuals registered - {}".format(state))
         plt.savefig("/tmp/total_individuals_registered_{}.png".format(state))
         plt.close()
         print("Generated total individuals registered plot for {}".format(state))
 
         totalStateDailyAgg["second_dose_admin"].plot()
+        plt.title("Number of second doses administered - {}".format(state))
         plt.savefig("/tmp/second_dose_admin_{}.png".format(state))
         plt.close()
         print("Generated second dose statistics plot for {}".format(state))
