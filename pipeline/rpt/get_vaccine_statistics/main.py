@@ -9,7 +9,7 @@ bucket = storage.Client().bucket(bucket_name)
 def transfer_to_bucket(file_path):
     size_kb = os.stat(file_path).st_size / 1000
     print("Timeseries artifact size : {} KB".format(size_kb))
-    assert size_kb > 50
+    assert size_kb > 15
     file_name = file_path.split("/")[2]
     bucket.blob("pipeline/rpt/{}".format(file_name)).upload_from_filename(file_path, content_type="image/png")
 
