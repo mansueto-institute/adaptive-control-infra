@@ -23,7 +23,7 @@ state_lookup = {
  'Himachal Pradesh': 'HP',
  'Haryana': 'HR',
  'Jharkhand': 'JH',
- 'Jammu & Kashmir': 'JK',
+ 'Jammu and Kashmir': 'JK',
  'Karnataka': 'KA',
  'Kerala': 'KL',
  'Ladakh': 'LA',
