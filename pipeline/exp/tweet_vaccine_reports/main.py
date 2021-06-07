@@ -87,12 +87,12 @@ def tweet_vax_report(request):
 
     blobs = []
 
-    bucket.blob("pipeline/rpt/first_dose_admin_{}.png".format(state)).download_to_filename("/tmp/first_dose_admin_{}.png".format(state))
-    blobs.append("/tmp/first_dose_admin_{}.png".format(state))
-    bucket.blob("pipeline/rpt/second_dose_admin_{}.png".format(state)).download_to_filename("/tmp/second_dose_admin_{}.png".format(state))
-    blobs.append("/tmp/second_dose_admin_{}.png".format(state))
-    bucket.blob("pipeline/rpt/total_individuals_registered_{}.png".format(state)).download_to_filename("/tmp/total_individuals_registered_{}.png".format(state))
-    blobs.append("/tmp/total_individuals_registered_{}.png".format(state))
+    bucket.blob("pipeline/rpt/first_dose_admin_{}.png".format(state_code)).download_to_filename("/tmp/first_dose_admin_{}.png".format(state_code))
+    blobs.append("/tmp/first_dose_admin_{}.png".format(state_code))
+    bucket.blob("pipeline/rpt/second_dose_admin_{}.png".format(state_code)).download_to_filename("/tmp/second_dose_admin_{}.png".format(state_code))
+    blobs.append("/tmp/second_dose_admin_{}.png".format(state_code))
+    bucket.blob("pipeline/rpt/total_individuals_registered_{}.png".format(state_code)).download_to_filename("/tmp/total_individuals_registered_{}.png".format(state_code))
+    blobs.append("/tmp/total_individuals_registered_{}.png".format(state_code))
 
 
     twitter = get_twitter_client(env="staging")
