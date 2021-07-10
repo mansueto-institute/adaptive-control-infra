@@ -12,8 +12,8 @@ smoothing = 10
 CI        = 0.95
 lookback  = 120 # how many days back to start estimation
 cutoff    = 2   # most recent data to use 
-dissolved_states = ["Delhi", "Chandigarh", "Manipur", "Sikkim", "Dadra And Nagar Haveli And Daman And Diu", "Andaman And Nicobar Islands", "Telangana", "Goa", "Assam"]
-excluded = ["Unknown", "Other State", "Airport Quarantine", "Railway Quarantine", "BSF Camp", "Foreign Evacuees", "Italians"]
+dissolved_states = ["Delhi", "Chandigarh", "Manipur", "Sikkim", "Dadra And Nagar Haveli And Daman And Diu", "Andaman And Nicobar Islands", "Telangana", "Goa", "Assam", "Lakshadweep"]
+excluded = ["Unknown", "Other State", "Other Region" "Airport Quarantine", "Railway Quarantine", "BSF Camp", "Foreign Evacuees", "Italians", "Evacuees"]
 
 # cloud details 
 bucket_name = "daily_pipeline"
@@ -33,11 +33,11 @@ def run_estimates(request):
     state_code = get(request, 'state_code')
     state = state_code_lookup[state_code]
 
-    print(f"Rt estimation for {state_code} ({state}) started")
+    print(f"Rt estimation for {state} ({state_code}) started")
     
     bucket = storage.Client().bucket(bucket_name)
     bucket.blob("pipeline/commons/refs/all_crosswalk.dta")\
-        .download_to_filename("/tmp/all_crosswalk.csv")
+        .download_to_filename("/tmp/all_crosswalk.dta")
 
     bucket.blob("pipeline/raw/states.csv")\
         .download_to_filename("/tmp/states.csv")
@@ -45,7 +45,7 @@ def run_estimates(request):
     bucket.blob("pipeline/raw/districts.csv")\
         .download_to_filename("/tmp/districts.csv")
 
-    crosswalk   = pd.read_stata("/tmp/all_crosswalk.csv")
+    crosswalk   = pd.read_stata("/tmp/all_crosswalk.dta")
     district_cases = pd.read_csv("/tmp/districts.csv")\
         .rename(columns = str.lower)\
         .set_index(["state", "district", "date"])\
@@ -59,7 +59,7 @@ def run_estimates(request):
         .rename(index = lambda s: s.replace(" and ", " & "), level = 0)\
         .loc[state]
     print(f"Estimating state-level Rt for {state_code}") 
-    normalized_state = state.replace(" and ", " & ")
+    normalized_state = state.replace(" and ", " And ").replace(" & ", " And ")
     lgd_state_name, lgd_state_id = crosswalk.query("state_api == @normalized_state").filter(like = "lgd_state").drop_duplicates().iloc[0]
     try:
         (
@@ -92,12 +92,13 @@ def run_estimates(request):
         print(f"ERROR when estimating Rt for {state_code}", e)
         print(traceback.print_exc())
     
-    if state in dissolved_states:
+    if normalized_state in dissolved_states:
         print(f"Skipping district-level Rt for {state_code}")
     else:
-        print(f"Estimating district-level Rt for {state_code}")
+        print(f"Estimating district-level Rt for {state} ({state_code})")
         estimates = []
-        for district in filter(lambda _: _ not in excluded, district_cases.index.get_level_values(0).unique()):
+        for district in filter(lambda _: _.strip() not in excluded, district_cases.index.get_level_values(0).unique()):
+            print(f"running estimation for [{district}]")
             lgd_district_data = crosswalk.query("state_api == @normalized_state & district_api == @district").filter(like = "lgd_district").drop_duplicates()
             if not lgd_district_data.empty:
                 lgd_district_name, lgd_district_id = lgd_district_data.iloc[0]

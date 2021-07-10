@@ -22,28 +22,23 @@ plt.set_theme("twitter")
 bucket_name = "daily_pipeline"
 bucket = storage.Client().bucket(bucket_name)
 
-@app.route("/")
-def hello_world():
-    name = os.environ.get("NAME", "World")
-    return "Hello {}!".format(name)
-
 @app.route("/state/<state_code>")
 def generate_report(state_code: str):
     print(f"Received request for {state_code}.")
     state = state_code_lookup[state_code]
+    normalized_state = state.replace(" and ", " And ").replace(" & ", " And ")
     blobs = { 
         f"pipeline/est/{state_code}_state_Rt.csv"   : f"/tmp/state_Rt_{state_code}.csv",
         f"pipeline/est/{state_code}_district_Rt.csv": f"/tmp/district_Rt_{state_code}.csv",
         f"pipeline/commons/maps/{state_code}.json"  : f"/tmp/state_{state_code}.geojson"
+    } if normalized_state not in dissolved_states else {
+        f"pipeline/est/{state_code}_state_Rt.csv"   : f"/tmp/state_Rt_{state_code}.csv",
     }
     for (blob_name, filename) in blobs.items():
         bucket.blob(blob_name).download_to_filename(filename)
     print(f"Downloaded estimates for {state_code}.")
     
     state_Rt    = pd.read_csv(f"/tmp/state_Rt_{state_code}.csv",    parse_dates = ["dates"], index_col = 0)
-    district_Rt = pd.read_csv(f"/tmp/district_Rt_{state_code}.csv", parse_dates = ["dates"], index_col = 0)
-    latest_Rt = district_Rt[district_Rt.dates == district_Rt.dates.max()].set_index("district")["Rt_pred"].to_dict()
-    top10 = [(k, "> 3.0" if v > 3 else f"{v:.2f}") for (k, v) in sorted(latest_Rt.items(), key = lambda t:t[1], reverse = True)[:10]]
 
     plt.close("all")
     dates = [pd.Timestamp(date).to_pydatetime() for date in state_Rt.dates]
@@ -62,7 +57,11 @@ def generate_report(state_code: str):
     assert timeseries_size_kb > 50
     bucket.blob(f"pipeline/rpt/{state_code}_Rt_timeseries.png").upload_from_filename(f"/tmp/{state_code}_Rt_timeseries.png", content_type = "image/png")
 
-    if state not in (island_states + dissolved_states):
+    if normalized_state not in (island_states + dissolved_states):
+        district_Rt = pd.read_csv(f"/tmp/district_Rt_{state_code}.csv", parse_dates = ["dates"], index_col = 0)
+        latest_Rt = district_Rt[district_Rt.dates == district_Rt.dates.max()].set_index("district")["Rt_pred"].to_dict()
+        top10 = [(k, "> 3.0" if v > 3 else f"{v:.2f}") for (k, v) in sorted(latest_Rt.items(), key = lambda t:t[1], reverse = True)[:10]]
+        
         gdf = gpd.read_file(f"/tmp/state_{state_code}.geojson")
         gdf["Rt"] = gdf.district.map(latest_Rt)
         fig, ax = plt.subplots()
@@ -85,7 +84,7 @@ def generate_report(state_code: str):
         print(f"Skipped choropleth for {state_code}.")
 
 
-    if state not in dissolved_states:
+    if normalized_state not in dissolved_states:
         fig, ax = plt.subplots(1,1)
         ax.axis('tight')
         ax.axis('off')

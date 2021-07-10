@@ -10,8 +10,8 @@ bucket = storage.Client().bucket(bucket_name)
 secrets = secretmanager.SecretManagerServiceClient()
 
 tag_states       = ["MH", "BR", "PB", "TN", "KL"]
-dissolved_states = ["Delhi", "Chandigarh", "Manipur", "Sikkim", "Dadra And Nagar Haveli And Daman And Diu", "Andaman And Nicobar Islands", "Telangana", "Goa", "Assam"]
-island_states    = ["Lakshadweep", "Puducherry"]
+dissolved_states = ["Delhi", "Chandigarh", "Manipur", "Sikkim", "Dadra And Nagar Haveli And Daman And Diu", "Andaman And Nicobar Islands", "Telangana", "Goa", "Assam", "Lakshadweep"]
+island_states    = ["Puducherry"]
 
 state_code_lookup = {
     'AN'  : 'Andaman & Nicobar Islands',
@@ -83,6 +83,7 @@ def get_twitter_client(env = "PROD"):
 def tweet_report(request):
     state_code = get(request, "state_code")
     state = state_code_lookup[state_code]
+    normalized_state = state.replace(" and ", " And ").replace(" & ", " And ")
     print(f"Tweeting report for {state_code} ({state}).")
 
     blobs = []
@@ -91,8 +92,8 @@ def tweet_report(request):
     bucket.blob(f"pipeline/rpt/{state_code}_Rt_timeseries.png").download_to_filename(f"/tmp/{state_code}_Rt_timeseries.png")
     blobs.append(f"/tmp/{state_code}_Rt_timeseries.png")
     
-    if state in (dissolved_states + island_states):
-        if state in dissolved_states:
+    if normalized_state in (dissolved_states + island_states):
+        if normalized_state in dissolved_states:
             caveats.append("calculations run at state-level")
         else: 
             caveats.append("map generation skipped")
@@ -100,7 +101,7 @@ def tweet_report(request):
         bucket.blob(f"pipeline/rpt/{state_code}_Rt_choropleth.png").download_to_filename(f"/tmp/{state_code}_Rt_choropleth.png")
         blobs.append(f"/tmp/{state_code}_Rt_choropleth.png")
     
-    if state not in dissolved_states:
+    if normalized_state not in dissolved_states:
         bucket.blob(f"pipeline/rpt/{state_code}_Rt_top10.png").download_to_filename(f"/tmp/{state_code}_Rt_top10.png")
         blobs.append(f"/tmp/{state_code}_Rt_top10.png")
     
